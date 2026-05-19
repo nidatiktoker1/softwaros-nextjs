@@ -6,9 +6,9 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const keys = [
-    process.env.VITE_GROQ_API_KEY,
-    process.env.VITE_GROQ_API_KEY_2,
-    process.env.VITE_GROQ_API_KEY_3
+    process.env.GROQ_API_KEY,
+    process.env.GROQ_API_KEY_2,
+    process.env.GROQ_API_KEY_3
   ].filter(Boolean);
 
   for (const key of keys) {

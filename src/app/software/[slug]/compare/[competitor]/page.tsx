@@ -89,7 +89,6 @@ const ComparePage = () => {
   // Get the appropriate API endpoint (use direct external APIs)
   const getApiEndpoint = (type: "groq" | "gemini" | "openrouter"): string => {
     if (type === "groq") return "https://api.groq.com/openai/v1/chat/completions";
-    if (type === "gemini") return `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`;
     if (type === "openrouter") return "https://openrouter.ai/api/v1/chat/completions";
     return "";
   };
@@ -178,19 +177,14 @@ const ComparePage = () => {
   // Call Mistral API
   const callMistral = async (prompt: string, nameA: string, nameB: string): Promise<AIVerdict> => {
     try {
-      const apiKey = import.meta.env.process.env.MISTRAL_API_KEY;
-      if (!apiKey) throw new Error("Mistral API key not configured");
-
       const response = (await fetchWithTimeout(
-        "https://api.mistral.ai/v1/chat/completions",
+        "/api/mistral",
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "mistral-small",
             messages: [{ role: "user", content: prompt }],
             max_tokens: 200,
           }),
