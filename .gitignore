@@ -1,0 +1,18 @@
+# Next.js
+.next
+out
+node_modules
+*.log
+.DS_Store
+.env.local
+.env.*.local
+.env
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+Thumbs.db
