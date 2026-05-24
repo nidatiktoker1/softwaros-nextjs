@@ -17,7 +17,7 @@ const Counter = ({ to, suffix = "" }: { to: number; suffix?: string }) => {
   const [start, setStart] = useState(false);
   useEffect(() => {
     const el = wrapRef.current;
-    if (!el) return;
+    if (!el) return undefined;
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setStart(true); io.disconnect(); } },
       { threshold: 0.4 },
