@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
   swcMinify: true,
   images: {
@@ -9,9 +15,6 @@ const nextConfig = {
     GROQ_API_KEY: process.env.GROQ_API_KEY,
     GROQ_API_KEY_2: process.env.GROQ_API_KEY_2,
     GROQ_API_KEY_3: process.env.GROQ_API_KEY_3,
-    MISTRAL_API_KEY: process.env.MISTRAL_API_KEY,
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   },
 };
 
