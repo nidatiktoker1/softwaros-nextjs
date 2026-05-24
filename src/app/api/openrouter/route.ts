@@ -3,35 +3,66 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const apiKey = body?.apikey || process.env.OPENROUTER_API_KEY;
     
-    if (!apiKey) {
-      return NextResponse.json({ error: 'OpenRouter API key not configured' }, { status: 500 });
+    const keys = [
+      process.env.GROQ_API_KEY,
+      process.env.GROQ_API_KEY_2,
+      process.env.GROQ_API_KEY_3,
+    ].filter(Boolean);
+
+    if (keys.length === 0) {
+      console.error('❌ GROQ_API_KEY environment variables not configured');
+      return NextResponse.json({ error: 'Groq API key not configured' }, { status: 500 });
     }
 
-    const response = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'mistral/mistral-7b-instruct',
-          messages: body?.messages || [{ role: 'user', content: 'test' }],
-        }),
+    // Use general model for OpenRouter endpoint
+    const defaultModel = body?.model || 'llama-3.3-70b-versatile';
+    console.log(`📤 Groq API request (OpenRouter endpoint) - Model: ${defaultModel}`);
+
+    for (const key of keys) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${key}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: defaultModel,
+            messages: body?.messages || [{ role: 'user', content: 'test' }],
+            max_tokens: body?.max_tokens || 200,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.status === 429) {
+          console.warn('⚠️ Rate limited (429), trying next key...');
+          continue;
+        }
+
+        if (response.status === 401) {
+          console.error('❌ Unauthorized (401) - API key may be invalid or expired');
+          continue;
+        }
+
+        if (!response.ok) {
+          console.error(`❌ Groq API error (${response.status}):`, data);
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        console.log('✅ Groq API success');
+        return NextResponse.json(data);
+      } catch (keyError) {
+        console.warn('⚠️ Error with current key, trying next...');
+        continue;
       }
-    );
-
-    const data = await response.json();
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
     }
-    
-    return NextResponse.json(data);
+
+    console.error('❌ All Groq API keys exhausted or failed');
+    return NextResponse.json({ error: 'All Groq keys exhausted' }, { status: 429 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'OpenRouter API failed' }, { status: 500 });
+    console.error('❌ Groq API error:', error);
+    return NextResponse.json({ error: error.message || 'Groq API failed' }, { status: 500 });
   }
 }
 

@@ -1,6 +1,7 @@
 "use client";
 import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useSoftware, useSoftwareList, useShortcutsForSoftware } from "@/hooks/useSoftware";
 import { Seo } from "@/components/Seo";
 
@@ -271,6 +272,77 @@ const SoftwareHub = () => {
   const { data: allSoftware } = useSoftwareList();
   const { data: dbShortcuts = [] } = useShortcutsForSoftware(data?.slug);
 
+  // State for external API data
+  const [youtubeVideos, setYoutubeVideos] = useState<any[]>([]);
+  const [redditPosts, setRedditPosts] = useState<any[]>([]);
+  const [producthuntData, setProducthuntData] = useState<any>(null);
+  const [loadingExternal, setLoadingExternal] = useState(true);
+
+  // Fetch YouTube videos
+  useEffect(() => {
+    if (!data?.name) return;
+    const fetchYoutubeVideos = async () => {
+      try {
+        const response = await fetch("/api/youtube", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: data.name }),
+        });
+        const result = await response.json();
+        if (result.videos) {
+          setYoutubeVideos(result.videos);
+        }
+      } catch (error) {
+        console.error("Error fetching YouTube videos:", error);
+      }
+    };
+    fetchYoutubeVideos();
+  }, [data?.name]);
+
+  // Fetch Reddit posts
+  useEffect(() => {
+    if (!data?.name) return;
+    const fetchRedditPosts = async () => {
+      try {
+        const response = await fetch("/api/reddit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: data.name }),
+        });
+        const result = await response.json();
+        if (result.posts) {
+          setRedditPosts(result.posts);
+        }
+      } catch (error) {
+        console.error("Error fetching Reddit posts:", error);
+      }
+    };
+    fetchRedditPosts();
+  }, [data?.name]);
+
+  // Fetch Product Hunt data
+  useEffect(() => {
+    if (!data?.slug) return;
+    const fetchProducthuntData = async () => {
+      try {
+        const response = await fetch("/api/producthunt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: data.slug }),
+        });
+        const result = await response.json();
+        if (result.upvotes !== undefined) {
+          setProducthuntData(result);
+        }
+      } catch (error) {
+        console.error("Error fetching Product Hunt data:", error);
+      } finally {
+        setLoadingExternal(false);
+      }
+    };
+    fetchProducthuntData();
+  }, [data?.slug]);
+
   if (isLoading) return <div className="container py-12 font-mono text-muted-foreground">$ loading...</div>;
   if (!data) return notFound();
 
@@ -380,7 +452,11 @@ const SoftwareHub = () => {
         <StatBox value={headlinePrice} label="Price" />
         <StatBox value={freeTier} label="Free tier" />
         <StatBox value={learning} label="Ease" />
-        <StatBox value={trust ? `${Number(trust).toFixed(1)}/10` : "—"} label="Trust score" />
+        {producthuntData ? (
+          <StatBox value={`${producthuntData.rating || 0}★`} label="Product Hunt" />
+        ) : (
+          <StatBox value={trust ? `${Number(trust).toFixed(1)}/10` : "—"} label="Trust score" />
+        )}
       </section>
 
       {/* 2. About */}
@@ -431,6 +507,70 @@ const SoftwareHub = () => {
           </ul>
         </div>
       </section>
+
+      {/* 4a. YouTube Videos */}
+      {youtubeVideos.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-5">Top Reviews on YouTube</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {youtubeVideos.map((video) => (
+              <a
+                key={video.videoId}
+                href={video.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass glass-hover group overflow-hidden rounded-lg"
+              >
+                <div className="relative overflow-hidden bg-black/20 aspect-video">
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
+                    <div className="text-white text-3xl opacity-0 group-hover:opacity-100 transition">▶</div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="font-bold text-sm line-clamp-2 group-hover:text-primary transition">{video.title}</div>
+                  <div className="text-xs text-muted-foreground mt-2">{video.channelTitle}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 4b. Reddit Posts */}
+      {redditPosts.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-5">Popular Reddit Discussions</h2>
+          <div className="space-y-3">
+            {redditPosts.slice(0, 5).map((post) => (
+              <a
+                key={post.url}
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass glass-hover p-4 block transition hover:border-primary/50"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex flex-col items-center gap-1 text-xs font-mono text-muted-foreground min-w-fit">
+                    <div className="text-sm font-bold text-primary">{post.upvotes || 0}</div>
+                    <div>↑</div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-sm group-hover:text-primary transition line-clamp-2">{post.title}</div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      r/{post.subreddit} · {post.comments} comments
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 5. Pricing tiers */}
       {pricing.length > 0 && (

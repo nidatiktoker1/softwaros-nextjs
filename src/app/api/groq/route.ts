@@ -11,31 +11,61 @@ export async function POST(request: NextRequest) {
     ].filter(Boolean);
 
     if (keys.length === 0) {
+      console.error('❌ GROQ_API_KEY environment variables not configured');
       return NextResponse.json({ error: 'Groq API key not configured' }, { status: 500 });
     }
 
-    for (const key of keys) {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${key}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: body?.model || 'llama-3.3-70b-versatile',
-          messages: body?.messages || [],
-          max_tokens: body?.max_tokens || 200,
-        }),
-      });
+    // Default model selection based on task type
+    const defaultModel = body?.model || 'llama-3.3-70b-versatile';
+    console.log(`📤 Groq API request - Model: ${defaultModel}, Messages: ${body?.messages?.length || 0}`);
 
-      if (response.status === 429) continue;
-      const data = await response.json();
-      if (!response.ok) return NextResponse.json(data, { status: response.status });
-      return NextResponse.json(data);
+    for (const key of keys) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${key}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: defaultModel,
+            messages: body?.messages || [],
+            max_tokens: body?.max_tokens || 200,
+          }),
+        });
+
+        const data = await response.json();
+
+        // Handle rate limiting - try next key
+        if (response.status === 429) {
+          console.warn('⚠️ Rate limited (429), trying next key...');
+          continue;
+        }
+
+        // Handle unauthorized - check API key validity
+        if (response.status === 401) {
+          console.error('❌ Unauthorized (401) - API key may be invalid or expired');
+          continue;
+        }
+
+        // Return success or other errors
+        if (!response.ok) {
+          console.error(`❌ Groq API error (${response.status}):`, data);
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        console.log('✅ Groq API success');
+        return NextResponse.json(data);
+      } catch (keyError) {
+        console.warn('⚠️ Error with current key, trying next...');
+        continue;
+      }
     }
 
+    console.error('❌ All Groq API keys exhausted or failed');
     return NextResponse.json({ error: 'All Groq keys exhausted' }, { status: 429 });
   } catch (error: any) {
+    console.error('❌ Groq API error:', error);
     return NextResponse.json({ error: error.message || 'Groq API failed' }, { status: 500 });
   }
 }
