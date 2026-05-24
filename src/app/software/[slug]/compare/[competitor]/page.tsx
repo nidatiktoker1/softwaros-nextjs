@@ -62,7 +62,7 @@ const ComparePage = () => {
   const { competitor } = useParams();
   const { slug: software, basePath } = useSoftwareSlug();
   const a = useSoftware(software);
-  const b = useSoftware(competitor);
+const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
   
   const [verdicts, setVerdicts] = useState<AllVerdicts | null>(null);
   const [loading, setLoading] = useState(false);
