@@ -324,7 +324,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
           }
           
           // Make API call
-          const result = await callFunc(prompt, nameA, nameB);
+         const result = await callFunc(prompt, nameA as string, nameB as string);
           
           // Save to cache and update rate limit timestamp
           localStorage.setItem(verdictCacheKey, JSON.stringify(result));
