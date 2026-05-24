@@ -273,7 +273,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
   };
 
   useEffect(() => {
-    if (!software || !competitor) return;
+   if (!software || !competitor) return undefined;
     
     let cancel = false;
     
