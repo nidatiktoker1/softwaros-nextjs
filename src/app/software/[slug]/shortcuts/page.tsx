@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import Link from "next/link";
 import { useSoftware, useShortcutsForSoftware } from "@/hooks/useSoftware";
 import { useSoftwareSlug } from "@/hooks/useSoftwareSlug";
