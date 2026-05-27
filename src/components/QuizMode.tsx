@@ -52,7 +52,7 @@ export const QuizMode = ({ softwareName, list }: Props) => {
   const current = queue[idx];
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) return void 0;
     const down = (e: KeyboardEvent) => {
       if (e.key === "Tab" || e.key === "/") return; // don't hijack browser nav
       e.preventDefault();

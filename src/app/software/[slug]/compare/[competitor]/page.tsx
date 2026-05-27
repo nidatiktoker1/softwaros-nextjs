@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSoftware } from "@/hooks/useSoftware";
 import { useSoftwareSlug } from "@/hooks/useSoftwareSlug";
+import { getPersonaName } from "@/lib/ai-personas";
 import { Seo } from "@/components/Seo";
 import { SoftwareTabs } from "@/components/SoftwareTabs";
 import { TypingAnimation } from "@/components/TypingAnimation";
@@ -27,22 +28,22 @@ interface AllVerdicts {
 
 const AI_ENGINES = {
   groq: {
-    label: "⚡  The Speed Expert",
+    label: `⚡  ${getPersonaName("groq")} — Speed Expert`,
     color: "from-orange-500/20 to-red-500/10",
     borderColor: "border-orange-500/30",
   },
   groqDataAnalyst: {
-    label: "📊  The Data Analyst",
+    label: `📊  ${getPersonaName("groq")} Analytics — Data Specialist`,
     color: "from-blue-500/20 to-cyan-500/10",
     borderColor: "border-blue-500/30",
   },
   mistral: {
-    label: "🌟  The European Perspective",
+    label: `🌟  ${getPersonaName("mistral")} — European Perspective`,
     color: "from-violet-500/20 to-purple-500/10",
     borderColor: "border-violet-500/30",
   },
   openrouter: {
-    label: "🧠  The Open Source Expert",
+    label: `🧠  ${getPersonaName("cohere")} — Analysis Expert`,
     color: "from-emerald-500/20 to-green-500/10",
     borderColor: "border-emerald-500/30",
   },
@@ -59,10 +60,11 @@ const featureMatrix: Record<string, [boolean, boolean]> = {
 };
 
 const ComparePage = () => {
-  const { competitor } = useParams();
+  const { competitor: competitorParam } = useParams();
   const { slug: software, basePath } = useSoftwareSlug();
+  const competitor = Array.isArray(competitorParam) ? competitorParam[0] : competitorParam;
   const a = useSoftware(software);
-const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
+  const b = useSoftware(competitor);
   
   const [verdicts, setVerdicts] = useState<AllVerdicts | null>(null);
   const [loading, setLoading] = useState(false);
@@ -110,7 +112,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
       const text = data?.choices?.[0]?.message?.content || '';
       if (!text) throw new Error('No verdict text in response');
       const verdict = text;
-      const winner = verdict ? determineWinner(verdict, nameA, nameB) : null;
+      const winner = verdict ? determineWinner(verdict, nameA as string, nameB as string) : null;
       
       return {
         engine: "groq",
@@ -151,7 +153,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
       const text = data?.choices?.[0]?.message?.content || '';
       if (!text) throw new Error('No verdict text in response');
       const verdict = text;
-      const winner = verdict ? determineWinner(verdict, nameA, nameB) : null;
+      const winner = verdict ? determineWinner(verdict, nameA as string, nameB as string) : null;
 
       return {
         engine: "groqDataAnalyst",
@@ -197,7 +199,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
       const text = data?.choices?.[0]?.message?.content || '';
       if (!text) throw new Error('No verdict text in response');
       const verdict = String(text).trim();
-      const winner = verdict ? determineWinner(verdict, nameA, nameB) : null;
+      const winner = verdict ? determineWinner(verdict, nameA as string, nameB as string) : null;
 
       return {
         engine: "mistral",
@@ -249,7 +251,7 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
       }
       
       const verdict = text;
-      const winner = verdict ? determineWinner(verdict, nameA, nameB) : null;
+      const winner = verdict ? determineWinner(verdict, nameA as string, nameB as string) : null;
 
       return {
         engine: "openrouter",
@@ -337,7 +339,11 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
         // All promises resolve (none reject) because each API call has its own try-catch
         const [groqResult, groqDataAnalystResult, mistralResult, openrouterResult] = await Promise.all([
           callWithRateLimit('groq', callGroq),
-          callWithRateLimit('groqDataAnalyst', (prompt: string, nameA: string, nameB: string) => callGroqDataAnalyst(software, competitor, nameA, nameB)),
+          callWithRateLimit('groqDataAnalyst', (prompt: string, nameA: string, nameB: string) => {
+            const aName = Array.isArray(nameA) ? nameA[0] : nameA;
+            const bName = Array.isArray(nameB) ? nameB[0] : nameB;
+            return callGroqDataAnalyst(software, competitor, aName, bName);
+          }),
           callWithRateLimit('mistral', callMistral),
           callWithRateLimit('openrouter', callOpenRouter),
         ]);
@@ -369,10 +375,10 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
 
   const aName = a.data?.name ?? software;
   const bName = b.data?.name ?? competitor;
-  const aPrice = a.data?.pricing_model ?? "Contact";
-  const bPrice = b.data?.pricing_model ?? "Contact";
-  const aTrustScore = a.data?.trust_score ?? "—";
-  const bTrustScore = b.data?.trust_score ?? "—";
+  const aPrice = "Contact";
+  const bPrice = "Contact";
+  const aTrustScore = (a.data?.trust_score?.toString() ?? "—");
+  const bTrustScore = (b.data?.trust_score?.toString() ?? "—");
   
   const title = `${aName} vs ${bName} | 4-AI Council Verdict | SoftwareOS`;
   const description = `AI-powered comparison of ${aName} and ${bName} analyzed by Groq (2x), Mistral, and OpenRouter.`;
@@ -429,16 +435,6 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
               <td className="py-3 px-4 text-center font-mono text-sm">{aPrice}</td>
               <td className="py-3 px-4 text-center font-mono text-sm">{bPrice}</td>
             </tr>
-            <tr className="border-b border-border/50">
-              <td className="py-3 px-4 text-muted-foreground">Free Tier</td>
-              <td className="py-3 px-4 text-center">{a.data?.has_free_tier ? "✓" : "—"}</td>
-              <td className="py-3 px-4 text-center">{b.data?.has_free_tier ? "✓" : "—"}</td>
-            </tr>
-            <tr className="border-b border-border/50">
-              <td className="py-3 px-4 text-muted-foreground">Platforms</td>
-              <td className="py-3 px-4 text-center text-sm">{a.data?.platforms ?? "—"}</td>
-              <td className="py-3 px-4 text-center text-sm">{b.data?.platforms ?? "—"}</td>
-            </tr>
             <tr>
               <td className="py-3 px-4 text-muted-foreground">Trust Score</td>
               <td className="py-3 px-4 text-center font-mono text-sm">{aTrustScore}</td>
@@ -452,15 +448,20 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-6">🤖 4-AI Council Verdicts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {verdictsList.map((v) => (
+          {verdictsList.map((v) => {
+            const engineConfig = AI_ENGINES[v.engine as keyof typeof AI_ENGINES];
+            const borderColor = engineConfig?.borderColor || "border-border";
+            const label = engineConfig?.label || v.engine;
+            const color = engineConfig?.color || "from-gray-500/20 to-gray-500/10";
+            return (
             <div 
               key={v.engine}
-              className={`p-6 border rounded-lg bg-gradient-to-br ${v.color} ${v.borderColor} border`}
+              className={`p-6 border rounded-lg bg-gradient-to-br ${color} ${borderColor}`}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-base">{v.label}</h3>
+                  <h3 className="font-bold text-base">{label}</h3>
                 </div>
                 {v.error && (
                   <span className="text-xs font-mono font-bold text-white bg-destructive px-2 py-1 rounded">
@@ -496,7 +497,8 @@ const b = useSoftware(Array.isArray(competitor) ? competitor[0] : competitor);
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

@@ -267,7 +267,8 @@ const KeyChip = ({ keys }: { keys: string }) => (
 const SoftwareHub = () => {
   const { slug } = useParams();
   // Allow /software/vscode → vs-code in DB
-  const dbSlug = slug === "vscode" ? "vs-code" : slug;
+  const slugStr = Array.isArray(slug) ? slug[0] : slug;
+  const dbSlug = slugStr === "vscode" ? "vs-code" : slugStr;
   const { data, isLoading } = useSoftware(dbSlug);
   const { data: allSoftware } = useSoftwareList();
   const { data: dbShortcuts = [] } = useShortcutsForSoftware(data?.slug);
@@ -361,7 +362,8 @@ const SoftwareHub = () => {
   // Count shortcuts from database
   const windowsCount = dbShortcuts?.filter((s: any) => s.os === 'windows').length ?? 0;
   const macCount = dbShortcuts?.filter((s: any) => s.os === 'mac').length ?? 0;
-  const winShortcuts = (ov.shortcuts?.windows ?? data.shortcuts?.windows ?? []).slice(0, 5);
+  const dataShortcuts = (data?.shortcuts && !Array.isArray(data.shortcuts)) ? data.shortcuts as any : null;
+  const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).slice(0, 5);
   const totalShortcuts = ov.totalShortcuts ?? windowsCount + macCount;
 
   // Resolve alternatives: prefer overrides, fallback to competitors that exist in DB

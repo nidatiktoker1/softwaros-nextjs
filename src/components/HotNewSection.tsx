@@ -95,6 +95,12 @@ export const HotNewSection = () => {
               ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)
               : (fresh ?? []).map((s) => <NewCard key={s.id} s={s as Sw} />)}
           </div>
+          <Link
+            href="/?sort=newest#apps"
+            className="mt-4 inline-flex items-center gap-2 text-xs font-mono text-primary hover:text-primary-glow transition"
+          >
+            see all new arrivals →
+          </Link>
         </div>
       </div>
     </section>

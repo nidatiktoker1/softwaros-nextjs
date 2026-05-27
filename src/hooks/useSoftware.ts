@@ -70,7 +70,7 @@ export const useSoftwareByCategory = (categorySlug?: string) =>
       const { data, error } = await supabase
         .from("software")
         .select("*")
-        .eq("category_slug", categorySlug!)
+        .eq("category", categorySlug!)
         .order("trust_score", { ascending: false, nullsFirst: false });
       if (error) throw error;
       return (data ?? []) as unknown as Software[];
@@ -83,7 +83,8 @@ export const useCategories = () =>
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id,slug,name,icon,description");
+        .select("id,slug,name,icon,description,sort_order")
+        .order("sort_order", { ascending: true });
       if (error) {
         console.error("Categories query error:", error);
         throw error;
@@ -97,12 +98,20 @@ export const useShortcutsForSoftware = (slug?: string) =>
     queryKey: ["shortcuts-for-software", slug],
     enabled: !!slug,
     queryFn: async () => {
+      // Shortcuts data stored in software.shortcuts field (JSON)
       const { data, error } = await supabase
-        .from("shortcuts_data")
-        .select("*")
-        .eq("software_slug", slug!)
-        .order("os,category,keys");
-      if (error) throw error;
-      return (data ?? []) as any[];
+        .from("software")
+        .select("shortcuts")
+        .eq("slug", slug!)
+        .single();
+      if (error) {
+        // Return empty array if software not found
+        return [];
+      }
+      // Extract shortcuts array from the data
+      if (data?.shortcuts && Array.isArray(data.shortcuts)) {
+        return data.shortcuts;
+      }
+      return [];
     },
   });

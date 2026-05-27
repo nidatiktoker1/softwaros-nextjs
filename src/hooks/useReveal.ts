@@ -9,11 +9,11 @@ export function useReveal<T extends HTMLElement = HTMLElement>() {
 
   useEffect(() => {
     const root = ref.current;
-    if (!root) return;
+    if (!root) return void 0;
 
     if (!("IntersectionObserver" in window)) {
       root.querySelectorAll<HTMLElement>(".reveal").forEach((el) => el.classList.add("in-view"));
-      return;
+      return void 0;
     }
 
     const io = new IntersectionObserver(
@@ -53,12 +53,12 @@ export function useReveal<T extends HTMLElement = HTMLElement>() {
 export function useCountUp(target: number, durationMs = 1800, start = false) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (!start || !ref.current) return;
+    if (!start || !ref.current) return void 0;
     const el = ref.current;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       el.textContent = target.toLocaleString();
-      return;
+      return void 0;
     }
     const t0 = performance.now();
     let raf = 0;

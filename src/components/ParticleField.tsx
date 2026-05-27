@@ -8,9 +8,9 @@ export const ParticleField = () => {
 
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas) return;
+    if (!canvas) return void 0;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return void 0;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;

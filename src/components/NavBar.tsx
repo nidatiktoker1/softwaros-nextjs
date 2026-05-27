@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useCategories } from "@/hooks/useSoftware";
+import { supabase } from "@/integrations/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,8 +27,26 @@ const mainNavItems = [
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const { data: categories } = useCategories();
+
+  useEffect(() => {
+    // Get the current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription?.unsubscribe();
+  }, []);
 
   const categoryLinks = useMemo(() => {
     return (categories ?? []).map((c) => ({
@@ -40,6 +60,12 @@ export const NavBar = () => {
     "px-3 py-1.5 rounded text-sm text-foreground hover:text-primary transition-colors";
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setUserMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border">
@@ -97,6 +123,58 @@ export const NavBar = () => {
           ))}
         </nav>
 
+        {/* Auth buttons / User menu */}
+        <div className="hidden md:flex items-center gap-2">
+          {session ? (
+            <DropdownMenu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <button className="px-3 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-xs font-mono hover:bg-primary/30 transition">
+                  {session.user?.email?.split("@")[0]}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40 bg-[#111111] border-border/40">
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/profile"
+                    className="px-3 py-2 text-sm text-foreground hover:text-primary cursor-pointer transition-colors"
+                  >
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/settings"
+                    className="px-3 py-2 text-sm text-foreground hover:text-primary cursor-pointer transition-colors"
+                  >
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="px-3 py-2 text-sm text-red-500 hover:text-red-400 cursor-pointer transition-colors"
+                >
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={`${linkClass} text-primary hover:text-primary-glow`}
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="px-3 py-1.5 rounded-md bg-gradient-to-r from-primary to-primary-glow text-primary-foreground text-xs font-mono font-bold hover:shadow-glow transition"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
+        </div>
+
         {/* Mobile toggle */}
         <button
           type="button"
@@ -152,6 +230,54 @@ export const NavBar = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Mobile auth section */}
+            <div className="border-t border-border/40 mt-2 pt-2">
+              {session ? (
+                <>
+                  <Link
+                    href="/profile"
+                    onClick={() => setOpen(false)}
+                    className="px-2 py-3 text-sm text-foreground hover:text-primary border-b border-border/40 block"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setOpen(false)}
+                    className="px-2 py-3 text-sm text-foreground hover:text-primary border-b border-border/40 block"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setOpen(false);
+                    }}
+                    className="w-full px-2 py-3 text-sm text-red-500 hover:text-red-400 border-b border-border/40 text-left"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="px-2 py-3 text-sm text-foreground hover:text-primary border-b border-border/40 block"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setOpen(false)}
+                    className="px-2 py-3 text-sm text-primary hover:text-primary-glow block"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
+            </div>
           </nav>
         </div>
       )}

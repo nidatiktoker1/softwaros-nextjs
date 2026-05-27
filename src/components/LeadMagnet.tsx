@@ -48,10 +48,11 @@ const generatePdf = (software: Software) => {
     y += 12;
   };
 
-  drawSection("Windows", software.shortcuts?.windows ?? []);
-  drawSection("macOS", software.shortcuts?.mac ?? []);
-  drawSection("iPhone", software.shortcuts?.iphone ?? []);
-  drawSection("Android", software.shortcuts?.android ?? []);
+  const shortcuts = software.shortcuts && !Array.isArray(software.shortcuts) ? software.shortcuts : null;
+  drawSection("Windows", shortcuts?.windows ?? []);
+  drawSection("macOS", shortcuts?.mac ?? []);
+  drawSection("iPhone", shortcuts?.iphone ?? []);
+  drawSection("Android", shortcuts?.android ?? []);
 
   doc.save(`${software.slug}-shortcuts.pdf`);
 };

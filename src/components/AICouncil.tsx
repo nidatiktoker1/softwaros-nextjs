@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react";
+import { getPersonaName } from "@/lib/ai-personas";
 
 const COUNCIL = [
   {
-    name: "Gemini",
+    name: getPersonaName("gemini"),
+    provider: "gemini",
     color: "from-blue-400 to-purple-500",
     glyph: "✦",
     line: "Figma wins for collaborative design — real-time multiplayer is unmatched.",
   },
   {
-    name: "Groq",
+    name: getPersonaName("groq"),
+    provider: "groq",
     color: "from-red-400 to-orange-500",
     glyph: "⚡",
     line: "Photoshop has 30+ years of pixel mastery. No contest for raster work.",
   },
   {
-    name: "Mistral",
+    name: getPersonaName("mistral"),
+    provider: "mistral",
     color: "from-cyan-400 to-blue-500",
     glyph: "◇",
     line: "VS Code dominates IDEs: extensions, speed, free. Cursor only beats it for AI.",
   },
   {
-    name: "Cohere",
+    name: getPersonaName("cohere"),
+    provider: "cohere",
     color: "from-emerald-400 to-teal-500",
     glyph: "◉",
     line: "Excel still rules finance. Sheets wins for collaboration. Pick by team.",
@@ -33,9 +38,12 @@ const Typer = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     let i = 0;
     let raf = 0;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { setShown(text); return; }
+    if (reduce) { 
+      setShown(text);
+      return undefined;
+    }
     const startAt = performance.now() + delay;
-    const tick = (now: number) => {
+    const tick = (now: number): void => {
       if (now < startAt) { raf = requestAnimationFrame(tick); return; }
       const elapsed = now - startAt;
       const target = Math.min(text.length, Math.floor(elapsed / 22));

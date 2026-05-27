@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 
 export const SiteFooter = () => (
   <footer className="border-t border-border mt-16">
@@ -11,8 +12,22 @@ export const SiteFooter = () => (
           <span>SoftwareOS</span>
         </Link>
         <p className="text-xs text-muted-foreground mt-3 max-w-[220px]">
-          The operating system for software knowledge. Shortcuts, AI comparisons, pricing.
+          Discover, compare, and read reviews for 180+ software tools. Master shortcuts, get AI comparisons, track pricing.
         </p>
+        <div className="flex gap-3 mt-4">
+          <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition">
+            <Twitter className="w-4 h-4" />
+          </a>
+          <a href="https://github.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition">
+            <Github className="w-4 h-4" />
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition">
+            <Linkedin className="w-4 h-4" />
+          </a>
+          <a href="mailto:hello@softwaros.com" className="text-muted-foreground hover:text-primary transition">
+            <Mail className="w-4 h-4" />
+          </a>
+        </div>
       </div>
 
       <div>
@@ -20,21 +35,21 @@ export const SiteFooter = () => (
           Product
         </div>
         <ul className="space-y-2">
-          <li><Link href="/" className="hover:text-primary transition">Apps</Link></li>
-          <li><a href="/#categories" className="hover:text-primary transition">Categories</a></li>
-          <li><Link href="/gestures" className="hover:text-primary transition">Gestures</Link></li>
-          <li><a href="/#pricing-plans" className="hover:text-primary transition">Pricing</a></li>
+          <li><Link href="/" className="hover:text-primary transition">Home</Link></li>
+          <li><Link href="/compare" className="hover:text-primary transition">Compare</Link></li>
+          <li><Link href="/shortcuts" className="hover:text-primary transition">Shortcuts</Link></li>
+          <li><Link href="/pricing" className="hover:text-primary transition">Pricing</Link></li>
         </ul>
       </div>
 
       <div>
         <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-3">
-          Resources
+          Company
         </div>
         <ul className="space-y-2">
-          <li><a href="/sitemap.xml" className="hover:text-primary transition">Sitemap</a></li>
-          <li><a href="/robots.txt" className="hover:text-primary transition">Robots</a></li>
-          <li><a href="https://docs.lovable.dev" target="_blank" rel="noreferrer" className="hover:text-primary transition">Docs</a></li>
+          <li><Link href="/about" className="hover:text-primary transition">About</Link></li>
+          <li><Link href="/blog" className="hover:text-primary transition">Blog</Link></li>
+          <li><Link href="/contact" className="hover:text-primary transition">Contact</Link></li>
         </ul>
       </div>
 
@@ -43,16 +58,15 @@ export const SiteFooter = () => (
           Legal
         </div>
         <ul className="space-y-2">
-          <li><a href="#" className="hover:text-primary transition">Privacy</a></li>
-          <li><a href="#" className="hover:text-primary transition">Terms</a></li>
-          <li><a href="mailto:hello@softwaros.app" className="hover:text-primary transition">Contact</a></li>
+          <li><Link href="/privacy" className="hover:text-primary transition">Privacy</Link></li>
+          <li><Link href="/terms" className="hover:text-primary transition">Terms</Link></li>
         </ul>
       </div>
     </div>
     <div className="border-t border-border">
       <div className="container py-5 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
         <div>© {new Date().getFullYear()} SoftwareOS — all rights reserved.</div>
-        <div className="font-mono text-[10px]">v2.0 · Updated 2026</div>
+        <div className="font-mono text-[10px]">v2.0 · Made with ♦ for developers</div>
       </div>
     </div>
   </footer>

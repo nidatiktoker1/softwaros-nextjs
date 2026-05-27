@@ -1,3 +1,5 @@
+import { getPersonaName } from "@/lib/ai-personas";
+
 const steps = [
   {
     n: "01",
@@ -9,7 +11,7 @@ const steps = [
     n: "02",
     cmd: "$ ai-council --convene",
     title: "Let 4 AIs argue for you",
-    body: "Gemini, Groq, Mistral and Cohere debate the comparison and reach a verdict in seconds.",
+    body: `${getPersonaName("gemini")}, ${getPersonaName("groq")}, ${getPersonaName("mistral")} and ${getPersonaName("cohere")} debate the comparison and reach a verdict in seconds.`,
   },
   {
     n: "03",

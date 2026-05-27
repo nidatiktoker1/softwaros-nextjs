@@ -37,6 +37,8 @@ const Counter = ({ to, suffix = "" }: { to: number; suffix?: string }) => {
 const Home = () => {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("all");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 24;
   const { data, isLoading } = useSoftwareList();
   const pageRef = useReveal<HTMLDivElement>();
 
@@ -51,10 +53,24 @@ const Home = () => {
       const matchQ =
         !q ||
         s.name.toLowerCase().includes(q.toLowerCase()) ||
-        s.category.toLowerCase().includes(q.toLowerCase());
+        s.category.toLowerCase().includes(q.toLowerCase()) ||
+        (s.description?.toLowerCase().includes(q.toLowerCase()) ?? false);
       return matchCat && matchQ;
     });
   }, [data, q, cat]);
+
+  const paged = useMemo(() => {
+    const start = page * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filtered.slice(start, end);
+  }, [filtered, page, PAGE_SIZE]);
+
+  const hasMore = (page + 1) * PAGE_SIZE < filtered.length;
+
+  // Reset pagination when filter changes
+  useEffect(() => {
+    setPage(0);
+  }, [q, cat]);
 
   return (
     <div ref={pageRef}>
@@ -78,8 +94,8 @@ const Home = () => {
           </h1>
 
           <p className="mt-6 text-lg text-muted-foreground max-w-2xl reveal" style={{ transitionDelay: "100ms" }}>
-            Master shortcuts. Compare tools with four AIs at once. Track pricing.
-            Everything you need to be 10× faster in the apps you live in.
+            Discover, compare, and read reviews for 180+ tools. Master shortcuts.
+            Compare with four AIs at once. Track pricing. Be 10× faster.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-3 max-w-2xl reveal" style={{ transitionDelay: "200ms" }}>
@@ -159,33 +175,45 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((s, i) => (
-              <Link
-                key={s.id}
-                href={`/software/${s.slug}`}
-                className="glass glass-hover p-5 group reveal"
-                style={{ transitionDelay: `${Math.min(i, 8) * 50}ms` }}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/60 px-2 py-0.5 rounded">
-                    {s.category}
-                  </span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {paged.map((s, i) => (
+                <Link
+                  key={s.id}
+                  href={`/software/${s.slug}`}
+                  className="glass glass-hover p-5 group reveal"
+                  style={{ transitionDelay: `${Math.min(i, 8) * 50}ms` }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/60 px-2 py-0.5 rounded">
+                      {s.category}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
+                  <div className="mt-4 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all">
+                    open ./{s.slug} →
+                  </div>
+                </Link>
+              ))}
+              {paged.length === 0 && (
+                <div className="col-span-full text-center py-16 text-muted-foreground font-mono text-sm">
+                  no matches. try another query.
                 </div>
-                <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
-                <div className="mt-4 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all">
-                  open ./{s.slug} →
-                </div>
-              </Link>
-            ))}
-            {filtered.length === 0 && (
-              <div className="col-span-full text-center py-16 text-muted-foreground font-mono text-sm">
-                no matches. try another query.
+              )}
+            </div>
+            {hasMore && (
+              <div className="flex justify-center mt-12">
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  className="px-6 py-2.5 rounded-md bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-mono text-sm font-bold hover:shadow-glow transition-all hover:scale-[1.02]"
+                >
+                  load more apps →
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
       </section>
 

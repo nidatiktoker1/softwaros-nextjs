@@ -7,18 +7,18 @@ import "@/globals.css";
 export const metadata: Metadata = {
   title: "SoftwareOS — Shortcuts, Comparisons & Pricing for Every App",
   description:
-    "The operating system for software knowledge. Compare apps with 4 AIs, master shortcuts, track pricing.",
+    "Discover, compare, and read reviews for 180+ software tools. The operating system for software knowledge with AI comparisons, shortcuts, and pricing tracking.",
   openGraph: {
     title: "SoftwareOS — Shortcuts, Comparisons & Pricing for Every App",
     description:
-      "The operating system for software knowledge. Compare apps with 4 AIs, master shortcuts, track pricing.",
+      "Discover, compare, and read reviews for 180+ software tools. AI-powered comparisons, master shortcuts, track pricing.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "SoftwareOS — Shortcuts, Comparisons & Pricing for Every App",
     description:
-      "The operating system for software knowledge. Compare apps with 4 AIs, master shortcuts, track pricing.",
+      "Discover, compare, and read reviews for 180+ software tools. AI-powered comparisons, master shortcuts, track pricing.",
   },
 };
 
