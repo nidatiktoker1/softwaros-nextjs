@@ -130,7 +130,7 @@ const Category = () => {
           {software.length} {software.length === 1 ? "tool" : "tools"} compared · Updated May 2026
         </p>
         <p className="text-muted-foreground max-w-3xl">
-          {category?.description ?? `Hand-picked ${prettyName} apps with shortcuts, pricing and AI comparisons.`}
+          {`Hand-picked ${prettyName} apps with shortcuts, pricing and AI comparisons.`}
         </p>
       </section>
 
