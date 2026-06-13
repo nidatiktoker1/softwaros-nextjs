@@ -66,22 +66,6 @@ export const useCategories = () =>
   useQuery({
     queryKey: ["categories"],
     queryFn: async (): Promise<Category[]> => {
-      const { data, error } = await (supabase as any)
-        .from("categories")
-        .select("id,slug,name,icon,description,sort_order")
-        .order("sort_order", { ascending: true });
-      if (error) {
-        console.error("Categories query error:", error);
-        throw error;
-      }
-      return (data ?? []) as Category[];
-    },
-  });
-
-export const useCategories = () =>
-  useQuery({
-    queryKey: ["categories"],
-    queryFn: async (): Promise<Category[]> => {
       const { data, error } = await supabase
         .from("categories")
         .select("id,slug,name,icon,description,sort_order")
