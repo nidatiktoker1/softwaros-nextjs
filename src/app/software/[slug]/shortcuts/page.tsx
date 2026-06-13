@@ -129,7 +129,7 @@ const ShortcutsPage = () => {
     const manual = getManualShortcuts(slug, os);
     if (manual.length > 0) return manual;
     // Try to get shortcuts from database
-    const databaseList = (dbShortcuts?.filter((s: any) => s.os === os) ?? []).map((s: any) => ({
+    const databaseList = (Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === os) : []).map((s: any) => ({
       keys: s.keys,
       action: s.action,
       category: s.category ?? "General"
