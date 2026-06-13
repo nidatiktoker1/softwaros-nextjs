@@ -350,9 +350,9 @@ const SoftwareHub = () => {
   const ov = overrides[data.slug] ?? {};
   const trust = ov.trustScore ?? (data as unknown as { trust_score?: number }).trust_score ?? null;
   const learning = ov.learningCurve ?? (data as unknown as { learning_curve?: string }).learning_curve ?? "Medium";
-  const pros = ov.pros ?? ((data as unknown as { pros?: string[] }).pros) ?? [];
-  const cons = ov.cons ?? ((data as unknown as { cons?: string[] }).cons) ?? [];
-  const pricing = (ov.pricing ?? data.pricing ?? []) as PricingTierExtended[];
+  const pros = ov.pros ?? (Array.isArray((data as any).pros) ? (data as any).pros : []);
+const cons = ov.cons ?? (Array.isArray((data as any).cons) ? (data as any).cons : []);
+  const pricing = (ov.pricing ?? (Array.isArray(data.pricing_data) ? data.pricing_data : Array.isArray(data.pricing) ? data.pricing : [])) as PricingTierExtended[];
 
   const headlinePrice =
     ov.headlinePrice ??
@@ -369,7 +369,7 @@ const SoftwareHub = () => {
   // Resolve alternatives: prefer overrides, fallback to competitors that exist in DB
   const altList =
     ov.alternatives ??
-    (data.competitors ?? [])
+    (Array.isArray(data.competitors) ? data.competitors : [])
       .map((c) => (allSoftware ?? []).find((s) => s.slug === c || s.name.toLowerCase() === c.toLowerCase()))
       .filter(Boolean)
       .slice(0, 3)
