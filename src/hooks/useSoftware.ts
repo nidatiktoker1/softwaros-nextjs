@@ -92,3 +92,17 @@ export const useShortcutsForSoftware = (slug?: string) =>
       return data?.shortcuts_count ?? [];
     },
   });
+  export const useSoftwareByCategory = (categorySlug?: string) =>
+  useQuery({
+    queryKey: ["software-category", categorySlug],
+    enabled: !!categorySlug,
+    queryFn: async (): Promise<Software[]> => {
+      const { data, error } = await (supabase as any)
+        .from("tools")
+        .select("*")
+        .eq("category_slug", categorySlug!)
+        .order("trust_score", { ascending: false, nullsFirst: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as Software[];
+    },
+  });
