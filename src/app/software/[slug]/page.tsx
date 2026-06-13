@@ -363,6 +363,8 @@ const cons = ov.cons ?? (Array.isArray((data as any).cons) ? (data as any).cons 
   
  const windowsCount = Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === 'windows').length : 0;
 const macCount = Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === 'mac').length : 0;
+const dataShortcuts = (data?.shortcuts && !Array.isArray(data.shortcuts)) ? data.shortcuts as any : null;
+const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).slice(0, 5);
   const totalShortcuts = ov.totalShortcuts ?? windowsCount + macCount;
 
   // Resolve alternatives: prefer overrides, fallback to competitors that exist in DB
