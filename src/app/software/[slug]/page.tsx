@@ -360,9 +360,8 @@ const cons = ov.cons ?? (Array.isArray((data as any).cons) ? (data as any).cons 
   const freeTier = ov.freeTier ?? (pricing.some((p) => p.price === 0) ? "Free tier available" : "No free tier");
 
   // Count shortcuts from database
-  const windowsCount = dbShortcuts?.filter((s: any) => s.os === 'windows').length ?? 0;
-  const macCount = dbShortcuts?.filter((s: any) => s.os === 'mac').length ?? 0;
-  const windowsCount = Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === 'windows').length : 0;
+  
+ const windowsCount = Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === 'windows').length : 0;
 const macCount = Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === 'mac').length : 0;
   const totalShortcuts = ov.totalShortcuts ?? windowsCount + macCount;
 
