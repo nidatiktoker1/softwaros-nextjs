@@ -185,7 +185,7 @@ const Home = () => {
                   style={{ transitionDelay: `${Math.min(i, 8) * 50}ms` }}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    {s.logo_url ?? s.logo ?? "▣"}
+                    {s.logo_url ? <img src={s.logo_url} alt={s.name} className="w-8 h-8 rounded object-contain" /> : "▣"}
                    {s.category_slug ?? s.category}
                   </div>
                   <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
