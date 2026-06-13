@@ -68,7 +68,7 @@ export const useCategories = () =>
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await (supabase as any)
         .from("categories")
-        .select("id,slug,name,icon,description,sort_order")
+        .select("id,slug,name,icon,sort_order")
         .order("sort_order", { ascending: true });
       if (error) {
         console.error("Categories query error:", error);
