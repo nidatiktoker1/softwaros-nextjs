@@ -185,7 +185,12 @@ const Home = () => {
                   style={{ transitionDelay: `${Math.min(i, 8) * 50}ms` }}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    {s.logo_url ? <img src={s.logo_url} alt={s.name} className="w-8 h-8 rounded object-contain" /> : "▣"}
+                    <img 
+  src={`https://www.google.com/s2/favicons?domain=${s.logo_url?.replace('https://logo.clearbit.com/', '') ?? s.slug}.com&sz=128`}
+  alt={s.name} 
+  className="w-8 h-8 rounded object-contain"
+  onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png' }}
+/>
                    {s.category_slug ?? s.category}
                   </div>
                   <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
