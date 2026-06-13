@@ -10,7 +10,7 @@ export const CategoryGrid = () => {
   const counts = useMemo(() => {
     const m = new Map<string, number>();
     for (const s of software ?? []) {
-      m.set(s.category, (m.get(s.category) ?? 0) + 1);
+     m.set(s.category_slug, (m.get(s.category_slug) ?? 0) + 1);
     }
     return m;
   }, [software]);
@@ -29,7 +29,7 @@ export const CategoryGrid = () => {
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-32" />)
           : (cats ?? []).map((c, i) => {
-              const count = counts.get(c.name) ?? 0;
+              const count = counts.get(c.slug) ?? 0;
               return (
                 <a
                   key={c.id}
