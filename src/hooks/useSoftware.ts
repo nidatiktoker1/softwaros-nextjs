@@ -62,18 +62,19 @@ export type Category = {
   sort_order: number;
 };
 
-export const useSoftwareByCategory = (categorySlug?: string) =>
+export const useCategories = () =>
   useQuery({
-    queryKey: ["software-category", categorySlug],
-    enabled: !!categorySlug,
-    queryFn: async (): Promise<Software[]> => {
+    queryKey: ["categories"],
+    queryFn: async (): Promise<Category[]> => {
       const { data, error } = await (supabase as any)
-        .from("tools")
-        .select("*")
-        .eq("category_slug", categorySlug!)
-        .order("trust_score", { ascending: false, nullsFirst: false });
-      if (error) throw error;
-      return (data ?? []) as unknown as Software[];
+        .from("categories")
+        .select("id,slug,name,icon,description,sort_order")
+        .order("sort_order", { ascending: true });
+      if (error) {
+        console.error("Categories query error:", error);
+        throw error;
+      }
+      return (data ?? []) as Category[];
     },
   });
 
