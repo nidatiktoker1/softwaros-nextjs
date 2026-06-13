@@ -6,7 +6,7 @@ export const useSoftwareList = () =>
   useQuery({
     queryKey: ["software-list"],
     queryFn: async (): Promise<Software[]> => {
-      const { data, error } = await supabase.from("software").select("*").order("name");
+      const { data, error } = await (supabase as any).from("tools").select("*").order("name");
       if (error) throw error;
       return (data ?? []) as unknown as Software[];
     },
@@ -17,7 +17,7 @@ export const useSoftware = (slug?: string) =>
     queryKey: ["software", slug],
     enabled: !!slug,
     queryFn: async (): Promise<Software | null> => {
-      const { data, error } = await supabase.from("software").select("*").eq("slug", slug!).maybeSingle();
+      const { data, error } = await (supabase as any).from("tools").select("*").eq("slug", slug!).maybeSingle();
       if (error) throw error;
       return (data as unknown as Software) ?? null;
     },
@@ -27,8 +27,8 @@ export const useTrending = (limit = 6) =>
   useQuery({
     queryKey: ["software-trending", limit],
     queryFn: async (): Promise<Software[]> => {
-      const { data, error } = await supabase
-        .from("software")
+      const { data, error } = await (supabase as any)
+        .from("tools")
         .select("*")
         .eq("is_trending", true)
         .order("trust_score", { ascending: false, nullsFirst: false })
@@ -42,10 +42,10 @@ export const useNewArrivals = (limit = 4) =>
   useQuery({
     queryKey: ["software-new", limit],
     queryFn: async (): Promise<Software[]> => {
-      const { data, error } = await supabase
-        .from("software")
+      const { data, error } = await (supabase as any)
+        .from("tools")
         .select("*")
-        .eq("is_new_arrival", true)
+        .eq("is_new", true)
         .order("created_at", { ascending: false })
         .limit(limit);
       if (error) throw error;
@@ -67,10 +67,10 @@ export const useSoftwareByCategory = (categorySlug?: string) =>
     queryKey: ["software-category", categorySlug],
     enabled: !!categorySlug,
     queryFn: async (): Promise<Software[]> => {
-      const { data, error } = await supabase
-        .from("software")
+      const { data, error } = await (supabase as any)
+        .from("tools")
         .select("*")
-        .eq("category", categorySlug!)
+        .eq("category_slug", categorySlug!)
         .order("trust_score", { ascending: false, nullsFirst: false });
       if (error) throw error;
       return (data ?? []) as unknown as Software[];
@@ -98,20 +98,12 @@ export const useShortcutsForSoftware = (slug?: string) =>
     queryKey: ["shortcuts-for-software", slug],
     enabled: !!slug,
     queryFn: async () => {
-      // Shortcuts data stored in software.shortcuts field (JSON)
-      const { data, error } = await supabase
-        .from("software")
-        .select("shortcuts")
+      const { data, error } = await (supabase as any)
+        .from("tools")
+        .select("shortcuts_count")
         .eq("slug", slug!)
         .single();
-      if (error) {
-        // Return empty array if software not found
-        return [];
-      }
-      // Extract shortcuts array from the data
-      if (data?.shortcuts && Array.isArray(data.shortcuts)) {
-        return data.shortcuts;
-      }
-      return [];
+      if (error) return [];
+      return data?.shortcuts_count ?? [];
     },
   });
