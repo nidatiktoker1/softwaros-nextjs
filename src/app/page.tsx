@@ -185,10 +185,8 @@ const Home = () => {
                   style={{ transitionDelay: `${Math.min(i, 8) * 50}ms` }}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/60 px-2 py-0.5 rounded">
-                      {s.category}
-                    </span>
+                    {s.logo_url ?? s.logo ?? "▣"}
+                   {s.category_slug ?? s.category}
                   </div>
                   <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
