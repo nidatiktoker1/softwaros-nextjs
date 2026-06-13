@@ -18,8 +18,8 @@ const PricingPage = () => {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const cheapest = sw?.pricing
-    ?.filter((t) => t.price > 0)
+  const cheapest = (Array.isArray(sw?.pricing) ? sw.pricing : [])
+  .filter((t: any) => t.price > 0)
     .sort((a, b) => a.price - b.price)[0]?.price;
 
   const onAlert = async (e: React.FormEvent) => {
@@ -49,7 +49,7 @@ const PricingPage = () => {
     "@context": "https://schema.org",
     "@type": "Product",
     name: sw.name,
-    offers: sw.pricing.map((t) => ({
+    offers: (Array.isArray(sw.pricing) ? sw.pricing : []).map((t) => ({
       "@type": "Offer",
       name: t.tier,
       price: t.price,
@@ -75,7 +75,7 @@ const PricingPage = () => {
       <SoftwareTabs />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        {sw?.pricing.map((t) => (
+        {(Array.isArray(sw?.pricing) ? sw.pricing : []).map((t: any) => (
           <div key={t.tier} className="terminal-border p-6">
             <div className="font-mono text-xs uppercase text-muted-foreground">{t.tier}</div>
             <div className="mt-3">
