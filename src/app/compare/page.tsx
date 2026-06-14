@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useSoftwareList } from "@/hooks/useSoftware";
+import { useSoftwareList, useCategories } from "@/hooks/useSoftware";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,17 +10,30 @@ import { useReveal } from "@/hooks/useReveal";
 
 export default function ComparePage() {
   const revealRef = useReveal<HTMLDivElement>();
-  const [search, setSearch] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedA, setSelectedA] = useState<string | null>(null);
   const [selectedB, setSelectedB] = useState<string | null>(null);
   const { data: software, isLoading } = useSoftwareList();
+  const { data: categories, isLoading: catLoading } = useCategories();
 
-  const filtered = useMemo(() => {
-    return (software ?? []).filter((s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.category.toLowerCase().includes(search.toLowerCase())
+  const filteredCategories = useMemo(() => {
+    return (categories ?? []).filter((c) =>
+      c.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
+      c.slug.toLowerCase().includes(categorySearch.toLowerCase())
     );
-  }, [software, search]);
+  }, [categories, categorySearch]);
+
+  const toolsInCategory = useMemo(() => {
+    if (!selectedCategory) return [];
+    return (software ?? []).filter((s) => s.category_slug === selectedCategory);
+  }, [software, selectedCategory]);
+
+  const handleSelectCategory = (slug: string) => {
+    setSelectedCategory(slug);
+    setSelectedA(null);
+    setSelectedB(null);
+  };
 
   const handleCompare = () => {
     if (selectedA && selectedB) {
@@ -29,6 +42,7 @@ export default function ComparePage() {
   };
 
   const canCompare = selectedA && selectedB && selectedA !== selectedB;
+  const selectedCategoryName = (categories ?? []).find((c) => c.slug === selectedCategory)?.name;
 
   return (
     <div ref={revealRef} className="min-h-screen bg-background">
@@ -54,75 +68,111 @@ export default function ComparePage() {
       <section className="container py-20">
         <div className="max-w-4xl mx-auto">
           <div className="glass glass-hover p-8 rounded-lg mb-10">
-            <label className="block text-sm font-medium mb-3">Search tools</label>
+            {/* Step 1: Category selector */}
+            <label className="block text-sm font-medium mb-3">
+              Step 1 — Pick a category
+            </label>
             <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="figma, photoshop, sketch..."
-              className="mb-8"
+              value={categorySearch}
+              onChange={(e) => setCategorySearch(e.target.value)}
+              placeholder="vpn, design, productivity..."
+              className="mb-4"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Tool A */}
-              <div>
-                <h3 className="font-bold mb-4">Tool A</h3>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {isLoading ? (
-                    Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10" />)
-                  ) : filtered.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No tools found</p>
-                  ) : (
-                    filtered.map((tool) => (
-                      <button
-                        key={tool.id}
-                        onClick={() => setSelectedA(tool.slug)}
-                        className={`w-full text-left px-4 py-3 rounded-lg border transition flex items-center gap-3 ${
-                          selectedA === tool.slug
-                            ? "bg-primary/20 border-primary/50"
-                            : "bg-transparent border-border/40 hover:border-primary/40"
-                        }`}
-                      >
-                        <span className="text-2xl">{tool.logo ?? "▣"}</span>
-                        <div className="min-w-0">
-                          <div className="font-medium text-sm">{tool.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">{tool.category}</div>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Tool B */}
-              <div>
-                <h3 className="font-bold mb-4">Tool B</h3>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {isLoading ? (
-                    Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10" />)
-                  ) : filtered.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No tools found</p>
-                  ) : (
-                    filtered.map((tool) => (
-                      <button
-                        key={tool.id}
-                        onClick={() => setSelectedB(tool.slug)}
-                        className={`w-full text-left px-4 py-3 rounded-lg border transition flex items-center gap-3 ${
-                          selectedB === tool.slug
-                            ? "bg-primary/20 border-primary/50"
-                            : "bg-transparent border-border/40 hover:border-primary/40"
-                        }`}
-                      >
-                        <span className="text-2xl">{tool.logo ?? "▣"}</span>
-                        <div className="min-w-0">
-                          <div className="font-medium text-sm">{tool.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">{tool.category}</div>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-2 mb-8">
+              {catLoading ? (
+                Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-24" />)
+              ) : filteredCategories.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No categories found</p>
+              ) : (
+                filteredCategories.map((cat) => (
+                  <button
+                    key={cat.slug}
+                    onClick={() => handleSelectCategory(cat.slug)}
+                    className={`px-4 py-2 rounded-full text-sm font-mono border transition flex items-center gap-2 ${
+                      selectedCategory === cat.slug
+                        ? "bg-primary/20 border-primary/50 text-primary"
+                        : "bg-transparent border-border/40 hover:border-primary/40 text-muted-foreground"
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    {cat.name}
+                  </button>
+                ))
+              )}
             </div>
+
+            {/* Step 2: Tool A / Tool B - only shown after category selected */}
+            {selectedCategory && (
+              <>
+                <label className="block text-sm font-medium mb-3">
+                  Step 2 — Pick two {selectedCategoryName} tools
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Tool A */}
+                  <div>
+                    <h3 className="font-bold mb-4">Tool A</h3>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {isLoading ? (
+                        Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10" />)
+                      ) : toolsInCategory.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No tools in this category yet</p>
+                      ) : (
+                        toolsInCategory.map((tool) => (
+                          <button
+                            key={tool.id}
+                            onClick={() => setSelectedA(tool.slug)}
+                            className={`w-full text-left px-4 py-3 rounded-lg border transition flex items-center gap-3 ${
+                              selectedA === tool.slug
+                                ? "bg-primary/20 border-primary/50"
+                                : "bg-transparent border-border/40 hover:border-primary/40"
+                            }`}
+                          >
+                            <span className="text-2xl">{tool.logo ?? "▣"}</span>
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm">{tool.name}</div>
+                              <div className="text-xs text-muted-foreground truncate">{tool.category}</div>
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tool B */}
+                  <div>
+                    <h3 className="font-bold mb-4">Tool B</h3>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {isLoading ? (
+                        Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10" />)
+                      ) : toolsInCategory.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No tools in this category yet</p>
+                      ) : (
+                        toolsInCategory
+                          .filter((tool) => tool.slug !== selectedA)
+                          .map((tool) => (
+                            <button
+                              key={tool.id}
+                              onClick={() => setSelectedB(tool.slug)}
+                              className={`w-full text-left px-4 py-3 rounded-lg border transition flex items-center gap-3 ${
+                                selectedB === tool.slug
+                                  ? "bg-primary/20 border-primary/50"
+                                  : "bg-transparent border-border/40 hover:border-primary/40"
+                              }`}
+                            >
+                              <span className="text-2xl">{tool.logo ?? "▣"}</span>
+                              <div className="min-w-0">
+                                <div className="font-medium text-sm">{tool.name}</div>
+                                <div className="text-xs text-muted-foreground truncate">{tool.category}</div>
+                              </div>
+                            </button>
+                          ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <Button
               onClick={handleCompare}
@@ -137,8 +187,8 @@ export default function ComparePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                title: "Pick two tools",
-                desc: "Search and select any two tools you want to compare.",
+                title: "Pick a category",
+                desc: "Choose a category, then pick two tools from it to compare.",
               },
               {
                 title: "AI debate",
@@ -164,9 +214,9 @@ export default function ComparePage() {
         <h2 className="text-3xl font-bold gradient-text mb-10">Popular Comparisons</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            { a: "figma", b: "sketch", label: "Figma vs Sketch" },
-            { a: "photoshop", b: "figma", label: "Photoshop vs Figma" },
-            { a: "vs-code", b: "sublime-text", label: "VS Code vs Sublime" },
+            { a: "figma", b: "canva", label: "Figma vs Canva" },
+            { a: "nordvpn", b: "expressvpn", label: "NordVPN vs ExpressVPN" },
+            { a: "chatgpt", b: "claude", label: "ChatGPT vs Claude" },
           ].map((comp, i) => (
             <Link
               key={i}
