@@ -135,10 +135,10 @@ const Home = () => {
           {/* Stats strip */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
             {[
-              { label: "shortcuts indexed", value: 48000, suffix: "+" },
-              { label: "categories", value: 500, suffix: "+" },
-              { label: "AI council members", value: 4, suffix: "" },
-              { label: "tools tracked", value: 10000, suffix: "+" },
+             { label: "tools tracked", value: 178, suffix: "+" },
+{ label: "categories", value: 10, suffix: "" },
+{ label: "AI council members", value: 4, suffix: "" },
+{ label: "shortcuts indexed", value: 15, suffix: "+" },
             ].map((s, i) => (
               <div key={s.label} className="glass p-4 reveal" style={{ transitionDelay: `${400 + i * 80}ms` }}>
                 <div className="text-2xl md:text-3xl font-bold">
