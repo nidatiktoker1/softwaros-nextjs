@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight } from "lucide-react";
+import { useReveal } from "@/hooks/useReveal";
 
 export default function ComparePage() {
+  const revealRef = useReveal<HTMLDivElement>();
   const [search, setSearch] = useState("");
   const [selectedA, setSelectedA] = useState<string | null>(null);
   const [selectedB, setSelectedB] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export default function ComparePage() {
   const canCompare = selectedA && selectedB && selectedA !== selectedB;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={revealRef} className="min-h-screen bg-background">
       {/* Hero */}
       <section className="container py-20 md:py-28 border-b border-border">
         <div className="max-w-3xl">
