@@ -1,4 +1,6 @@
 "use client";
+
+import { useReveal } from "@/hooks/useReveal";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useSoftwareList } from "@/hooks/useSoftware";
@@ -7,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, ChevronRight } from "lucide-react";
 
 export default function ShortcutsPage() {
+  const revealRef = useReveal<HTMLDivElement>();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { data: software, isLoading } = useSoftwareList();
@@ -27,7 +30,7 @@ export default function ShortcutsPage() {
   }, [software, search, categoryFilter]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={revealRef} className="min-h-screen bg-background">
       {/* Hero */}
       <section className="container py-20 md:py-28 border-b border-border">
         <div className="max-w-3xl">

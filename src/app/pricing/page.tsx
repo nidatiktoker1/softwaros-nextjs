@@ -1,9 +1,12 @@
 "use client";
+
+import { useReveal } from "@/hooks/useReveal";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function PricingPage() {
+  const revealRef = useReveal<HTMLDivElement>();
   const plans = [
     {
       name: "Free",
@@ -60,7 +63,7 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={revealRef} className="min-h-screen bg-background">
       {/* Hero */}
       <section className="container py-20 md:py-28 border-b border-border">
         <div className="max-w-3xl">
