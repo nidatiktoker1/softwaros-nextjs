@@ -352,7 +352,25 @@ const SoftwareHub = () => {
   const learning = ov.learningCurve ?? (data as unknown as { learning_curve?: string }).learning_curve ?? "Medium";
   const pros = ov.pros ?? (Array.isArray((data as any).pros) ? (data as any).pros : []);
 const cons = ov.cons ?? (Array.isArray((data as any).cons) ? (data as any).cons : []);
-  const pricing = (ov.pricing ?? (Array.isArray(data.pricing_data) ? data.pricing_data : Array.isArray(data.pricing) ? data.pricing : [])) as PricingTierExtended[];
+  
+  // Handle pricing_data from database (can be array or object with tiers)
+  let pricing = ov.pricing ?? [];
+  if (!ov.pricing) {
+    if (Array.isArray(data.pricing_data)) {
+      pricing = data.pricing_data;
+    } else if (data.pricing_data?.tiers && Array.isArray(data.pricing_data.tiers)) {
+      // Transform tiers from {name, price, ...} to {tier, price: number, period, ...}
+      pricing = data.pricing_data.tiers.map((t: any) => ({
+        tier: t.name || t.tier,
+        price: typeof t.price === 'string' ? 0 : t.price,
+        period: t.period || 'mo',
+        description: t.description
+      }));
+    } else if (Array.isArray(data.pricing)) {
+      pricing = data.pricing;
+    }
+  }
+  pricing = pricing as PricingTierExtended[];
 
   const headlinePrice =
     ov.headlinePrice ??
@@ -432,7 +450,7 @@ const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).sli
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold gradient-text">{data.name}</h1>
-          <p className="text-muted-foreground mt-3 max-w-2xl">{ov.tagline ?? data.description}</p>
+          <p className="text-muted-foreground mt-3 max-w-2xl">{ov.tagline ?? data.tagline ?? data.description}</p>
         </div>
       </header>
 
@@ -469,11 +487,11 @@ const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).sli
       </section>
 
       {/* 3. Best for tags */}
-      {ov.bestFor && ov.bestFor.length > 0 && (
+      {(ov.bestFor || (Array.isArray(data.best_for_tags) && data.best_for_tags.length > 0)) && (
         <section className="mb-12">
           <h3 className="text-sm font-mono uppercase tracking-widest text-muted-foreground mb-3">Best for</h3>
           <div className="flex flex-wrap gap-2">
-            {ov.bestFor.map((t) => (
+            {(ov.bestFor || data.best_for_tags || []).map((t) => (
               <span
                 key={t}
                 className="px-3 py-1.5 rounded-full text-xs font-mono border border-primary/40 text-primary bg-primary/5"
@@ -486,30 +504,32 @@ const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).sli
       )}
 
       {/* 4. Pros & cons */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-        <div className="glass p-6">
-          <h3 className="font-bold mb-4 text-green-400">Pros</h3>
-          <ul className="space-y-2">
-            {pros.map((p) => (
-              <li key={p} className="flex gap-2 text-sm">
-                <span className="text-green-400 shrink-0">✓</span>
-                <span className="text-muted-foreground">{p}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="glass p-6">
-          <h3 className="font-bold mb-4 text-red-400">Cons</h3>
-          <ul className="space-y-2">
-            {cons.map((c) => (
-              <li key={c} className="flex gap-2 text-sm">
-                <span className="text-red-400 shrink-0">✗</span>
-                <span className="text-muted-foreground">{c}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      {(pros.length > 0 || cons.length > 0) && (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <div className="glass p-6">
+            <h3 className="font-bold mb-4 text-green-400">Pros</h3>
+            <ul className="space-y-2">
+              {pros.map((p) => (
+                <li key={p} className="flex gap-2 text-sm">
+                  <span className="text-green-400 shrink-0">✓</span>
+                  <span className="text-muted-foreground">{p}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="glass p-6">
+            <h3 className="font-bold mb-4 text-red-400">Cons</h3>
+            <ul className="space-y-2">
+              {cons.map((c) => (
+                <li key={c} className="flex gap-2 text-sm">
+                  <span className="text-red-400 shrink-0">✗</span>
+                  <span className="text-muted-foreground">{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* 4a. YouTube Videos */}
       {youtubeVideos.length > 0 && (
