@@ -9,7 +9,12 @@ const HotCard = ({ s }: { s: Sw }) => (
   <div className="glass glass-hover p-5 flex flex-col group reveal">
     <div className="flex items-start justify-between mb-3 gap-2">
       <div className="flex items-center gap-3 min-w-0">
-        <div className="text-3xl shrink-0">{s.logo ?? "▣"}</div>
+        <img
+          src={s.logo_url ?? `https://www.google.com/s2/favicons?domain=${s.slug}.com&sz=128`}
+          alt={s.name}
+          className="w-8 h-8 rounded object-contain"
+          onError={(e) => { (e.target as HTMLImageElement).style.display='none' }}
+        />
         <div className="min-w-0">
           <div className="font-bold text-base truncate group-hover:text-primary transition">
             {s.name}
@@ -44,7 +49,12 @@ const NewCard = ({ s }: { s: Sw }) => (
     href={`/software/${s.slug}`}
     className="glass glass-hover p-4 group flex items-center gap-3 reveal"
   >
-    <div className="text-2xl shrink-0">{s.logo ?? "▣"}</div>
+    <img
+      src={s.logo_url ?? `https://www.google.com/s2/favicons?domain=${s.slug}.com&sz=128`}
+      alt={s.name}
+      className="w-8 h-8 rounded object-contain"
+      onError={(e) => { (e.target as HTMLImageElement).style.display='none' }}
+    />
     <div className="min-w-0 flex-1">
       <div className="flex items-center gap-2">
         <div className="font-bold text-sm group-hover:text-primary transition truncate">
