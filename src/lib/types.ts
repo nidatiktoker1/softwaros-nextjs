@@ -38,5 +38,6 @@ export type Software = {
   learning_curve: string | null;
   ease_label: string | null;
   platforms: any;
+  entity_type: string; // 'software', 'service', 'template', 'plugin'
   created_at: string;
 };
