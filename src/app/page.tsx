@@ -186,10 +186,10 @@ const Home = () => {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <img 
-  src={`https://www.google.com/s2/favicons?domain=${s.logo_url?.replace('https://logo.clearbit.com/', '') ?? s.slug}.com&sz=128`}
+  src={s.logo_url ?? `https://www.google.com/s2/favicons?domain=${s.slug.replace(/-/g, '')}.com&sz=128`}
   alt={s.name} 
   className="w-8 h-8 rounded object-contain"
-  onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png' }}
+  onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%23333"/><text x="50%" y="50%" text-anchor="middle" dy=".35em" font-size="14" fill="white">▣</text></svg>' }}
 />
                    {s.category_slug ?? s.category}
                   </div>
