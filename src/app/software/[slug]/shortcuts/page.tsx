@@ -21,64 +21,8 @@ const osLabels: Record<OS, string> = {
   android: "Android",
 };
 
-const manualShortcuts: Record<string, Record<OS, PageShortcut[]>> = {
-  nordvpn: {
-    windows: [
-      { keys: "Ctrl+Alt+C", action: "Connect", category: "Connection" },
-      { keys: "Ctrl+Alt+D", action: "Disconnect", category: "Connection" },
-      { keys: "Ctrl+Alt+K", action: "Kill switch", category: "Security" },
-      { keys: "Ctrl+Alt+S", action: "Settings", category: "Settings" },
-      { keys: "Ctrl+Alt+Q", action: "Quit", category: "App" },
-      { keys: "Ctrl+Alt+N", action: "New server", category: "Server" },
-      { keys: "Ctrl+Alt+R", action: "Reconnect", category: "Connection" },
-      { keys: "Ctrl+Alt+P", action: "Pause VPN", category: "Control" },
-      { keys: "Ctrl+Alt+L", action: "Server list", category: "Server" },
-      { keys: "Ctrl+Alt+M", action: "Map view", category: "Navigation" },
-      { keys: "Ctrl+Alt+1", action: "Quick connect", category: "Connection" },
-      { keys: "Ctrl+Alt+H", action: "Help", category: "Support" },
-      { keys: "Ctrl+Alt+U", action: "Updates", category: "Maintenance" },
-      { keys: "Ctrl+Alt+F", action: "Meshnet", category: "Network" },
-      { keys: "Ctrl+Alt+T", action: "Threat Protection", category: "Security" },
-    ],
-    mac: [
-      { keys: "Cmd+Option+C", action: "Connect", category: "Connection" },
-      { keys: "Cmd+Option+D", action: "Disconnect", category: "Connection" },
-      { keys: "Cmd+Option+K", action: "Kill switch", category: "Security" },
-      { keys: "Cmd+Option+S", action: "Settings", category: "Settings" },
-      { keys: "Cmd+Q", action: "Quit", category: "App" },
-    ],
-    iphone: [
-      { keys: "Tap shield", action: "Connect", category: "Connection" },
-      { keys: "3D Touch", action: "Quick connect", category: "Connection" },
-    ],
-    android: [
-      { keys: "Tap shield", action: "Connect", category: "Connection" },
-      { keys: "Long press widget", action: "Quick connect", category: "Connection" },
-    ],
-  },
-  figma: {
-    windows: [
-      { keys: "V", action: "Move", category: "Tool" },
-      { keys: "A", action: "Frame", category: "Tool" },
-      { keys: "R", action: "Rectangle", category: "Shapes" },
-      { keys: "T", action: "Text", category: "Text" },
-      { keys: "P", action: "Pen", category: "Tool" },
-      { keys: "Ctrl+C", action: "Copy", category: "Edit" },
-      { keys: "Ctrl+V", action: "Paste", category: "Edit" },
-      { keys: "Ctrl+Z", action: "Undo", category: "Edit" },
-      { keys: "Ctrl+D", action: "Duplicate", category: "Edit" },
-      { keys: "Ctrl+G", action: "Group", category: "Layers" },
-      { keys: "Ctrl+Shift+G", action: "Ungroup", category: "Layers" },
-      { keys: "Ctrl+F", action: "Search", category: "Navigation" },
-      { keys: "Ctrl+Shift+E", action: "Export", category: "Export" },
-      { keys: "Ctrl+P", action: "Commands", category: "Commands" },
-      { keys: "Ctrl+\\", action: "Toggle UI", category: "Interface" },
-    ],
-    mac: [],
-    iphone: [],
-    android: [],
-  },
-};
+// Fallback for manual shortcuts (can be removed once all are seeded)
+const manualShortcuts: Record<string, Record<OS, PageShortcut[]>> = {};
 
 const confettiParticles = Array.from({ length: 18 }, (_, index) => ({
   id: index,
@@ -126,17 +70,29 @@ const ShortcutsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const list = useMemo<PageShortcut[]>(() => {
+    // Map platform-specific key fields to the current OS
+    const keyFieldMap: Record<OS, string> = {
+      windows: "keys_windows",
+      mac: "keys_mac",
+      iphone: "keys_iphone",
+      android: "keys_android",
+    };
+    const keyField = keyFieldMap[os];
+
+    if (Array.isArray(dbShortcuts) && dbShortcuts.length > 0) {
+      return dbShortcuts
+        .filter((s: any) => s[keyField]) // Filter out shortcuts without keys for this OS
+        .map((s: any) => ({
+          keys: s[keyField],
+          action: s.action,
+          category: s.category ?? "General",
+        }));
+    }
+
+    // Fallback to manual shortcuts if database is empty
     const manual = getManualShortcuts(slug, os);
-    if (manual.length > 0) return manual;
-    // Try to get shortcuts from database
-    const databaseList = (Array.isArray(dbShortcuts) ? dbShortcuts.filter((s: any) => s.os === os) : []).map((s: any) => ({
-      keys: s.keys,
-      action: s.action,
-      category: s.category ?? "General"
-    }));
-    if (databaseList.length > 0) return databaseList;
-    return [];
-  }, [dbShortcuts, os, slug]);
+    return manual;
+  }, [dbShortcuts, os]);
 
   const filteredShortcuts = useMemo(() => {
     const query = search.toLowerCase();

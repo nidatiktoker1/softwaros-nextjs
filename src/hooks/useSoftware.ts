@@ -84,12 +84,12 @@ export const useShortcutsForSoftware = (slug?: string) =>
     enabled: !!slug,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("tools")
-        .select("shortcuts_count")
-        .eq("slug", slug!)
-        .single();
+        .from("shortcuts")
+        .select("*")
+        .eq("tool_slug", slug!)
+        .order("category");
       if (error) return [];
-      return data?.shortcuts_count ?? [];
+      return (data ?? []) as unknown as any[];
     },
   });
   export const useSoftwareByCategory = (categorySlug?: string) =>
