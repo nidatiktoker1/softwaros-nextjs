@@ -30,7 +30,7 @@ export default function AboutPage() {
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex gap-3">
                 <span className="text-primary">▸</span>
-                <span><strong>Tool Discovery:</strong> 180+ tools across 50+ categories</span>
+                <span><strong>Tool Discovery:</strong> 200+ tools across 27 categories</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-primary">▸</span>

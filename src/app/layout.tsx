@@ -5,6 +5,7 @@ import { Providers } from "@/components/Providers";
 import "@/globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://softwaros-nextjs.vercel.app"),
   title: "SoftwareOS — Shortcuts, Comparisons & Pricing for Every App",
   description:
     "Discover, compare, and read reviews for 180+ software tools. The operating system for software knowledge with AI comparisons, shortcuts, and pricing tracking.",
