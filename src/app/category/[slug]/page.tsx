@@ -66,6 +66,90 @@ const categoryGuides: Record<string, CategoryGuide> = {
       { question: "Is performance important for editors?", answer: "Absolutely — fast startup, low memory usage, and responsive editing make development smoother." },
     ],
   },
+  "code-editors": {
+    paragraphs: [
+      "A great code editor should offer fast syntax highlighting, intelligent autocomplete, and a plugin ecosystem that adapts to your stack. The best editors balance lightweight performance with deep language support.",
+      "Look for built-in Git integration, multi-cursor editing, and a strong extension marketplace. Cross-platform editors with cloud-synced settings make it easier to work consistently across machines.",
+      "Consider whether you need a lightweight text editor or a full IDE with debugging and build tools built in. Free and open-source options are common in this category, so pricing isn't always the deciding factor.",
+    ],
+    faq: [
+      { question: "What's the difference between a code editor and an IDE?", answer: "A code editor focuses on writing and editing code quickly, while an IDE bundles debugging, build tools, and project management into one application." },
+      { question: "Are most code editors free?", answer: "Yes — many popular code editors are free and open source, though some offer paid extensions or enterprise support tiers." },
+      { question: "Can I use extensions to add language support?", answer: "Most modern editors support a plugin marketplace where you can add syntax highlighting, linters, and debuggers for nearly any language." },
+      { question: "Do code editors support remote development?", answer: "Many leading editors let you connect to remote servers, containers, or WSL environments and edit files as if they were local." },
+      { question: "Which editor is best for beginners?", answer: "Editors with strong default configurations, built-in terminals, and large community support tend to be the easiest for beginners to pick up." },
+    ],
+  },
+  "email-marketing": {
+    paragraphs: [
+      "The best email marketing platforms combine drag-and-drop campaign builders with reliable deliverability and detailed analytics. Automation workflows help you nurture leads without manual follow-up.",
+      "Look for built-in audience segmentation, A/B testing, and integrations with your CRM or e-commerce platform. Strong deliverability rates matter more than flashy templates.",
+      "Pricing usually scales with your subscriber list size, so compare free-tier limits and per-contact costs before committing to a long-term plan.",
+    ],
+    faq: [
+      { question: "What is email marketing automation?", answer: "Automation lets you trigger emails based on user behavior, like welcome sequences or abandoned cart reminders, without manually sending each one." },
+      { question: "How is pricing usually structured?", answer: "Most platforms charge based on the number of subscribers or contacts on your list, with higher tiers unlocking more sends and features." },
+      { question: "What is deliverability and why does it matter?", answer: "Deliverability measures how many of your emails actually reach the inbox instead of spam folders, directly affecting campaign performance." },
+      { question: "Can I integrate email marketing with my e-commerce store?", answer: "Most leading platforms offer native integrations with popular e-commerce platforms to sync customer and order data automatically." },
+      { question: "Do I need coding skills to design emails?", answer: "No — most platforms offer drag-and-drop builders, though some allow custom HTML for advanced users." },
+    ],
+  },
+  "cloud-storage": {
+    paragraphs: [
+      "A good cloud storage service should offer reliable sync, generous free storage, and strong file-sharing controls. Cross-device access is essential for keeping files up to date everywhere.",
+      "Look for end-to-end encryption options, version history, and collaboration features like shared folders and real-time editing. Backup-focused services may prioritize redundancy over collaboration.",
+      "Pricing typically scales with storage capacity, so compare per-GB costs and check for family or team plans if you need to share storage across multiple users.",
+    ],
+    faq: [
+      { question: "How much free storage do most services offer?", answer: "Free tiers typically range from a few gigabytes up to 15GB, depending on the provider and any bundled apps." },
+      { question: "Is cloud storage the same as backup software?", answer: "Not always — cloud storage focuses on syncing and sharing files, while backup software prioritizes automated, versioned copies of your entire system." },
+      { question: "How secure is my data in the cloud?", answer: "Reputable providers use encryption in transit and at rest, and some offer end-to-end encryption for extra privacy." },
+      { question: "Can I share files with people who don't have an account?", answer: "Yes — most services let you generate shareable links with optional passwords and expiration dates." },
+      { question: "What happens if I exceed my storage limit?", answer: "You'll typically need to upgrade to a paid plan or free up space, as most providers pause new uploads once you hit your limit." },
+    ],
+  },
+  antivirus: {
+    paragraphs: [
+      "Strong antivirus software should combine real-time malware detection with low system impact. Independent lab test scores are one of the best ways to compare actual protection quality.",
+      "Look for additional layers like ransomware protection, phishing detection, and a firewall. Many suites now bundle VPN access and password management as well.",
+      "Free antivirus tools can cover basic protection, but paid plans typically add identity theft monitoring, parental controls, and priority support.",
+    ],
+    faq: [
+      { question: "Is free antivirus software enough?", answer: "Free antivirus covers basic malware detection, but paid plans usually add ransomware protection, firewalls, and faster support." },
+      { question: "Will antivirus software slow down my computer?", answer: "Modern antivirus tools are designed to run efficiently in the background, though some impact is unavoidable during full system scans." },
+      { question: "What is real-time protection?", answer: "Real-time protection continuously scans files and processes as they run, blocking threats before they can execute." },
+      { question: "Do I need antivirus software on a Mac?", answer: "Macs face fewer threats than Windows but are not immune, so antivirus software is still a reasonable precaution." },
+      { question: "How often should I run a full system scan?", answer: "Most antivirus tools run automatic background scans, but a manual full scan every week or two is a good extra precaution." },
+    ],
+  },
+  "ai-tools": {
+    paragraphs: [
+      "The best AI tools combine fast, accurate output with flexible integrations into your existing workflow. Look for tools that support the specific tasks you need, whether that's writing, coding, image generation, or research.",
+      "Check usage limits carefully — many AI tools cap free-tier requests or context length, which can matter a lot for longer tasks. Data privacy policies are also worth reviewing before uploading sensitive material.",
+      "Pricing models vary widely, from flat monthly subscriptions to usage-based API pricing, so match the billing structure to how heavily you expect to use the tool.",
+    ],
+    faq: [
+      { question: "What's the difference between AI chatbots and AI assistants?", answer: "Chatbots are typically conversational interfaces, while AI assistants often integrate directly into apps and workflows to complete specific tasks." },
+      { question: "Are AI tools safe to use with sensitive data?", answer: "It depends on the provider's data policy — many offer enterprise tiers with stricter data handling, so check before uploading sensitive information." },
+      { question: "Do AI tools require a subscription?", answer: "Many offer free tiers with usage limits, while heavier or professional use typically requires a paid plan or API credits." },
+      { question: "Can AI tools replace human work entirely?", answer: "Most AI tools work best as assistants that speed up tasks, rather than full replacements for human judgment and review." },
+      { question: "How accurate are AI-generated outputs?", answer: "Accuracy varies by tool and task — always review AI-generated content for factual accuracy, especially for important decisions." },
+    ],
+  },
+  "password-managers": {
+    paragraphs: [
+      "A reliable password manager should offer strong encryption, cross-device sync, and easy autofill across browsers and apps. Look for zero-knowledge architecture so even the provider can't access your stored data.",
+      "Features like secure password sharing, breach monitoring, and two-factor authentication support add real security value beyond basic password storage.",
+      "Free tiers are often limited to a single device, so compare family or team plans if you need to share access or manage multiple users.",
+    ],
+    faq: [
+      { question: "What does zero-knowledge encryption mean?", answer: "It means your master password and stored data are encrypted locally, so the provider itself cannot access your unencrypted information." },
+      { question: "Can I share passwords securely with family or coworkers?", answer: "Yes — most password managers offer secure sharing features that let you share login credentials without revealing the actual password." },
+      { question: "What happens if I forget my master password?", answer: "Most providers cannot recover your master password due to zero-knowledge encryption, so it's critical to keep a backup recovery method." },
+      { question: "Are password managers safe from hacking?", answer: "No system is completely immune, but reputable password managers use strong encryption and security audits to minimize risk significantly." },
+      { question: "Do password managers work across all my devices?", answer: "Most leading password managers sync across desktop, mobile, and browser extensions so your passwords are available everywhere." },
+    ],
+  },
 };
 
 const getPriceLabel = (software: { pricing_data?: { price: number; period: string }[] | any; starting_price?: number | null }) => {
