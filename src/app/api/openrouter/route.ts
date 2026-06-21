@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkOrigin } from '@/lib/api-guard';
 
 export async function POST(request: NextRequest) {
   try {
+    const blocked = checkOrigin(request);
+    if (blocked) return blocked;
+
     const body = await request.json();
+
+    // Hard cap to prevent runaway token usage / cost abuse via this proxy
+    const maxTokens = Math.min(Number(body?.max_tokens) || 200, 500);
+    if (Array.isArray(body?.messages) && body.messages.length > 20) {
+      return NextResponse.json({ error: 'Too many messages' }, { status: 400 });
+    }
     
     const keys = [
       process.env.GROQ_API_KEY,
@@ -30,7 +40,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             model: defaultModel,
             messages: body?.messages || [{ role: 'user', content: 'test' }],
-            max_tokens: body?.max_tokens || 200,
+            max_tokens: maxTokens,
           }),
         });
 

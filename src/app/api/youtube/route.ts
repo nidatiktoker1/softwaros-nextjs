@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkOrigin } from "@/lib/api-guard";
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = checkOrigin(req);
+    if (blocked) return blocked;
+
     const { query } = await req.json();
 
     if (!query || typeof query !== "string") {
