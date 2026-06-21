@@ -78,6 +78,20 @@ export const useCategories = () =>
     },
   });
 
+export const useCategoryCounts = () =>
+  useQuery({
+    queryKey: ["category-counts"],
+    queryFn: async (): Promise<Record<string, number>> => {
+      const { data, error } = await (supabase as any).from("tools").select("category_slug");
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) {
+        counts[row.category_slug] = (counts[row.category_slug] ?? 0) + 1;
+      }
+      return counts;
+    },
+  });
+
 export const useShortcutsForSoftware = (slug?: string) =>
   useQuery({
     queryKey: ["shortcuts-for-software", slug],

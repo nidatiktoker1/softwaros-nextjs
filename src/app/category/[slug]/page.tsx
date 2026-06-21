@@ -219,7 +219,7 @@ const Category = () => {
       <nav className="text-xs font-mono text-muted-foreground mb-4 flex flex-wrap gap-2">
         <Link href="/" className="hover:text-primary">Home</Link>
         <span>›</span>
-        <Link href="/#categories" className="hover:text-primary">Categories</Link>
+        <Link href="/categories" className="hover:text-primary">Categories</Link>
         <span>›</span>
         <span className="text-white">{prettyName}</span>
       </nav>

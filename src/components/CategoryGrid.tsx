@@ -17,12 +17,17 @@ export const CategoryGrid = () => {
 
   return (
     <section id="categories" className="container py-20 border-t border-border">
-      <div className="reveal mb-10">
-        <p className="text-primary text-xs font-mono mb-2">$ ls ./categories</p>
-        <h2 className="text-3xl md:text-4xl font-bold gradient-text">Browse by category</h2>
-        <p className="text-muted-foreground mt-2 max-w-xl">
-          Every tool, sorted by what it does. Click a category to filter the catalog.
-        </p>
+      <div className="reveal mb-10 flex items-end justify-between flex-wrap gap-4">
+        <div>
+          <p className="text-primary text-xs font-mono mb-2">$ ls ./categories</p>
+          <h2 className="text-3xl md:text-4xl font-bold gradient-text">Browse by category</h2>
+          <p className="text-muted-foreground mt-2 max-w-xl">
+            Every tool, sorted by what it does, with both commercial and open-source options compared side by side.
+          </p>
+        </div>
+        <a href="/categories" className="text-sm font-mono text-primary hover:underline whitespace-nowrap">
+          View all categories →
+        </a>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
