@@ -68,14 +68,19 @@ const categoryGuides: Record<string, CategoryGuide> = {
   },
 };
 
-const getPriceLabel = (software: { pricing?: { price: number; period: string }[] }) => {
-  const price = software.pricing?.[0];
-  if (!price) return "—";
-  return price.price === 0 ? "Free" : `$${price.price}/${price.period}`;
+const getPriceLabel = (software: { pricing_data?: { price: number; period: string }[] | any; starting_price?: number | null }) => {
+  const tiers = Array.isArray(software.pricing_data) ? software.pricing_data : [];
+  const price = tiers[0];
+  if (price) return price.price === 0 ? "Free" : `$${price.price}/${price.period}`;
+  if (typeof software.starting_price === "number") return `$${software.starting_price}/mo`;
+  return "—";
 };
 
-const hasFreeTier = (software: { pricing?: { price: number }[] }) =>
-  (software.pricing ?? []).some((tier) => tier.price === 0) ? "Yes" : "No";
+const hasFreeTier = (software: { pricing_data?: { price: number }[] | any; has_free_tier?: boolean | null }) => {
+  const tiers = Array.isArray(software.pricing_data) ? software.pricing_data : [];
+  if (tiers.some((tier: { price: number }) => tier.price === 0)) return "Yes";
+  return software.has_free_tier ? "Yes" : "No";
+};
 
 const getTrustScore = (software: unknown) => {
   const trust = (software as { trust_score?: number }).trust_score;
@@ -109,6 +114,15 @@ const Category = () => {
     ],
   };
 
+  const commercialSoftware = useMemo(
+    () => software.filter((s) => s.entity_type !== "open-source"),
+    [software],
+  );
+  const openSourceSoftware = useMemo(
+    () => software.filter((s) => s.entity_type === "open-source"),
+    [software],
+  );
+
   return (
     <div className="container py-16">
       <Seo
@@ -136,32 +150,70 @@ const Category = () => {
         </p>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
-        {isLoading ? (
-          Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-44" />)
-        ) : software.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground font-mono text-sm col-span-full">
-            <p className="text-lg font-semibold mb-2">🔜 Coming Soon</p>
-            <p>More {prettyName} tools are coming soon. Check back later!</p>
-          </div>
-        ) : (
-          software.map((s) => (
-            <Link key={s.id} href={`/software/${s.slug}`} className="glass glass-hover p-5 group">
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/60 px-2 py-0.5 rounded">
-                  {s.category}
-                </span>
+      {isLoading ? (
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-44" />)}
+        </section>
+      ) : software.length === 0 ? (
+        <section className="text-center py-16 text-muted-foreground font-mono text-sm mb-12 border border-border/60 rounded-3xl">
+          <p className="text-lg font-semibold mb-2">🔜 Coming Soon</p>
+          <p>More {prettyName} tools are coming soon. Check back later!</p>
+        </section>
+      ) : (
+        <>
+          {commercialSoftware.length > 0 && (
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold mb-2">Commercial {prettyName} Software</h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                Paid and freemium {prettyName} tools, ranked by trust score.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {commercialSoftware.map((s) => (
+                  <Link key={s.id} href={`/software/${s.slug}`} className="glass glass-hover p-5 group">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground border border-border/60 px-2 py-0.5 rounded">
+                        {s.category}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
+                    <div className="mt-4 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 transition">
+                      open ./{s.slug} →
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
-              <div className="mt-4 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 transition">
-                open ./{s.slug} →
+            </section>
+          )}
+
+          {openSourceSoftware.length > 0 && (
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold mb-2">Open Source {prettyName} Software</h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                Free, self-hostable {prettyName} tools you can run and audit yourself.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {openSourceSoftware.map((s) => (
+                  <Link key={s.id} href={`/software/${s.slug}`} className="glass glass-hover p-5 group border-emerald-900/40">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-3xl group-hover:scale-110 transition-transform">{s.logo ?? "▣"}</div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 border border-emerald-900/60 px-2 py-0.5 rounded">
+                        Open Source
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-lg group-hover:text-primary transition">{s.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
+                    <div className="mt-4 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 transition">
+                      open ./{s.slug} →
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </Link>
-          ))
-        )}
-      </section>
+            </section>
+          )}
+        </>
+      )}
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-5">Comparison table</h2>
