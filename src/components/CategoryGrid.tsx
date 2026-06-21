@@ -33,7 +33,7 @@ export const CategoryGrid = () => {
               return (
                 <a
                   key={c.id}
-                  href={`/?cat=${encodeURIComponent(c.name)}#apps`}
+                  href={`/category/${c.slug}`}
                   className="glass glass-hover p-5 group reveal"
                   style={{ transitionDelay: `${i * 60}ms` }}
                 >

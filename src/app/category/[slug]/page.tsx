@@ -114,12 +114,14 @@ const Category = () => {
       <Seo
         title={`Best ${prettyName} Software 2026 — SoftwareOS`}
         description={`Compare the best ${prettyName} software. Shortcuts, pricing, reviews and AI-powered comparisons.`}
+        canonical={`https://softwaros-nextjs.vercel.app/category/${slug}`}
+        noindex={!isLoading && software.length === 0}
       />
 
       <nav className="text-xs font-mono text-muted-foreground mb-4 flex flex-wrap gap-2">
         <Link href="/" className="hover:text-primary">Home</Link>
         <span>›</span>
-        <Link href="/?cat=all#apps" className="hover:text-primary">Categories</Link>
+        <Link href="/#categories" className="hover:text-primary">Categories</Link>
         <span>›</span>
         <span className="text-white">{prettyName}</span>
       </nav>
@@ -127,7 +129,7 @@ const Category = () => {
       <section className="mb-12">
         <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-3">Best {prettyName} Software 2026</h1>
         <p className="text-muted-foreground mb-6">
-          {software.length} {software.length === 1 ? "tool" : "tools"} compared · Updated May 2026
+          {software.length} {software.length === 1 ? "tool" : "tools"} compared
         </p>
         <p className="text-muted-foreground max-w-3xl">
           {`Hand-picked ${prettyName} apps with shortcuts, pricing and AI comparisons.`}
