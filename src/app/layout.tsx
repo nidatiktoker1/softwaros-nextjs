@@ -6,6 +6,9 @@ import "@/globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://softwaros-nextjs.vercel.app"),
+  verification: {
+    google: "t1xiFNMYDWqTVy4n8G4rREKo4cwzXk60B_a930ND1QA",
+  },
   title: "SoftwareOS — Shortcuts, Comparisons & Pricing for Every App",
   description:
     "Discover, compare, and read reviews for 180+ software tools. The operating system for software knowledge with AI comparisons, shortcuts, and pricing tracking.",
