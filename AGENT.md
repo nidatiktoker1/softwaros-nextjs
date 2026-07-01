@@ -1,7 +1,7 @@
 # SoftwareOS - AI-Powered Software Discovery Platform
 
 ## Project Overview
-SoftwareOS is a Next.js application that helps users discover, compare, and learn about software tools. The platform includes AI-generated content, comparison features, and personalized recommendations.
+SoftwareOS is a Next.js application that helps users discover, compare, and learn about software tools. The platform includes AI-generated content, comparison features, and personalized recommendations
 
 ## Database Architecture
 - **Supabase Project**: mtjxngrugxabqiamwajp
