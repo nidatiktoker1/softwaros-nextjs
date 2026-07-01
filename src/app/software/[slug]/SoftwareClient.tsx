@@ -401,7 +401,7 @@ const winShortcuts = (ov.shortcuts?.windows ?? dataShortcuts?.windows ?? []).sli
 
   const title = `${data.name} — Shortcuts, Reviews, Pricing & AI Comparisons | SoftwareOS`;
   const description = `Everything about ${data.name}: keyboard shortcuts (Windows + Mac), real user reviews, current pricing tiers, and 4-AI head-to-head comparisons.`;
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const url = `https://softwaros-nextjs.vercel.app/software/${slug}`;
 
   const schema = {
     "@context": "https://schema.org",
