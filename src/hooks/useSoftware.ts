@@ -62,8 +62,9 @@ export type Category = {
   sort_order: number;
 };
 
-export const useCategories = () =>
+export const useCategories = (initialData?: Category[]) =>
   useQuery({
+    ...(initialData ? { initialData } : {}),
     queryKey: ["categories"],
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await (supabase as any)
@@ -106,8 +107,9 @@ export const useShortcutsForSoftware = (slug?: string) =>
       return (data ?? []) as unknown as any[];
     },
   });
-  export const useSoftwareByCategory = (categorySlug?: string) =>
+  export const useSoftwareByCategory = (categorySlug?: string, initialData?: Software[]) =>
   useQuery({
+    ...(initialData ? { initialData } : {}),
     queryKey: ["software-category", categorySlug],
     enabled: !!categorySlug,
     queryFn: async (): Promise<Software[]> => {

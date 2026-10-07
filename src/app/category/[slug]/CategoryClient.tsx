@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
-import { useCategories, useSoftwareByCategory } from "@/hooks/useSoftware";
+import { useCategories, useSoftwareByCategory, type Category } from "@/hooks/useSoftware";
+import type { Software } from "@/lib/types";
 import { Seo } from "@/components/Seo";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -171,10 +172,10 @@ const getTrustScore = (software: unknown) => {
   return typeof trust === "number" ? trust.toFixed(1) : "—";
 };
 
-const Category = () => {
+const Category = ({ initialTools, initialCategories }: { initialTools?: Software[]; initialCategories?: Category[] }) => {
   const { slug } = useParams<{ slug: string }>();
-  const { data: categories } = useCategories();
-  const { data: software = [], isLoading } = useSoftwareByCategory(slug);
+  const { data: categories } = useCategories(initialCategories);
+  const { data: software = [], isLoading } = useSoftwareByCategory(slug, initialTools);
 
   const category = useMemo(
     () => (categories ?? []).find((c) => c.slug === slug),

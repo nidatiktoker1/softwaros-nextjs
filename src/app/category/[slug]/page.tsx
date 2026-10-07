@@ -77,6 +77,35 @@ export async function generateMetadata(
   };
 }
 
-export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
-  return <CategoryClient />;
+export const dynamic = "force-dynamic";
+
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let initialTools: any[] | undefined;
+  let initialCategories: any[] | undefined;
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const [toolsRes, catsRes] = await Promise.all([
+      supabase
+        .from("tools")
+        .select("*")
+        .eq("category_slug", slug)
+        .order("trust_score", { ascending: false, nullsFirst: false }),
+      supabase
+        .from("categories")
+        .select("id,slug,name,icon,sort_order")
+        .order("sort_order", { ascending: true }),
+    ]);
+    if (!toolsRes.error && toolsRes.data) initialTools = toolsRes.data;
+    if (!catsRes.error && catsRes.data) initialCategories = catsRes.data;
+  } catch {
+    // Server fetch unavailable (e.g. missing env at build time): the client
+    // component falls back to its normal browser fetch.
+    initialTools = undefined;
+    initialCategories = undefined;
+  }
+  return <CategoryClient initialTools={initialTools} initialCategories={initialCategories} />;
 }
