@@ -264,14 +264,14 @@ const KeyChip = ({ keys }: { keys: string }) => (
   </span>
 );
 
-const SoftwareHub = () => {
+const SoftwareHub = ({ initialTool, initialList, initialShortcuts }: { initialTool?: any; initialList?: any[]; initialShortcuts?: any[] }) => {
   const { slug } = useParams();
   // Allow /software/vscode → vs-code in DB
   const slugStr = Array.isArray(slug) ? slug[0] : slug;
   const dbSlug = slugStr === "vscode" ? "vs-code" : slugStr;
-  const { data, isLoading } = useSoftware(dbSlug);
-  const { data: allSoftware } = useSoftwareList();
-  const { data: dbShortcuts = [] } = useShortcutsForSoftware(data?.slug);
+  const { data, isLoading } = useSoftware(dbSlug, initialTool);
+  const { data: allSoftware } = useSoftwareList(initialList);
+  const { data: dbShortcuts = [] } = useShortcutsForSoftware(data?.slug, initialShortcuts);
 
   // State for external API data
   const [youtubeVideos, setYoutubeVideos] = useState<any[]>([]);

@@ -57,6 +57,38 @@ export async function generateMetadata(
   };
 }
 
-export default function SoftwarePage() {
-  return <SoftwareClient />;
+export const dynamic = "force-dynamic";
+
+export default async function SoftwarePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const dbSlug = slug === "vscode" ? "vs-code" : slug;
+  let initialTool: any = undefined;
+  let initialList: any[] | undefined;
+  let initialShortcuts: any[] | undefined;
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const [toolRes, listRes, shortcutsRes] = await Promise.all([
+      supabase.from("tools").select("*").eq("slug", dbSlug).maybeSingle(),
+      supabase.from("tools").select("*").order("name"),
+      supabase.from("shortcuts").select("*").eq("tool_slug", dbSlug).order("category"),
+    ]);
+    if (!toolRes.error && toolRes.data) initialTool = toolRes.data;
+    if (!listRes.error && listRes.data) initialList = listRes.data;
+    if (!shortcutsRes.error && shortcutsRes.data) initialShortcuts = shortcutsRes.data;
+  } catch {
+    // Server fetch unavailable: client falls back to its browser fetch.
+    initialTool = undefined;
+    initialList = undefined;
+    initialShortcuts = undefined;
+  }
+  return (
+    <SoftwareClient
+      initialTool={initialTool}
+      initialList={initialList}
+      initialShortcuts={initialShortcuts}
+    />
+  );
 }

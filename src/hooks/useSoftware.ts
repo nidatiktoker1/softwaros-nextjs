@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Software } from "@/lib/types";
 
-export const useSoftwareList = () =>
+export const useSoftwareList = (initialData?: Software[]) =>
   useQuery({
+    ...(initialData ? { initialData } : {}),
     queryKey: ["software-list"],
     queryFn: async (): Promise<Software[]> => {
       const { data, error } = await (supabase as any).from("tools").select("*").order("name");
@@ -12,8 +13,9 @@ export const useSoftwareList = () =>
     },
   });
 
-export const useSoftware = (slug?: string) =>
+export const useSoftware = (slug?: string, initialData?: Software | null) =>
   useQuery({
+    ...(initialData !== undefined ? { initialData } : {}),
     queryKey: ["software", slug],
     enabled: !!slug,
     queryFn: async (): Promise<Software | null> => {
@@ -93,8 +95,9 @@ export const useCategoryCounts = () =>
     },
   });
 
-export const useShortcutsForSoftware = (slug?: string) =>
+export const useShortcutsForSoftware = (slug?: string, initialData?: any[]) =>
   useQuery({
+    ...(initialData ? { initialData } : {}),
     queryKey: ["shortcuts-for-software", slug],
     enabled: !!slug,
     queryFn: async () => {
