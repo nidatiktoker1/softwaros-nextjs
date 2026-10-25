@@ -4,6 +4,13 @@ import { ArrowRight } from "lucide-react";
 export default function BlogPage() {
   const posts = [
     {
+      title: "Best Free Video Editing Software for PC (2026)",
+      excerpt: "Seven editors that cost nothing and still export video you can actually publish — export limits, watermarks and AI caps, checked October 2026.",
+      date: "2026-10-25",
+      readTime: "8 min",
+      slug: "best-free-video-editing-software-for-pc",
+    },
+    {
       title: "10 Figma Shortcuts Every Designer Should Know",
       excerpt: "Speed up your design workflow with these essential keyboard shortcuts.",
       date: "2024-01-15",
@@ -48,14 +55,27 @@ export default function BlogPage() {
                   <time className="text-xs font-mono text-muted-foreground">{post.date}</time>
                 </div>
                 <h2 className="text-2xl font-bold group-hover:text-primary transition mb-3">
-                  {post.title}
+                  {post.slug === "best-free-video-editing-software-for-pc" ? (
+                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                  ) : (
+                    post.title
+                  )}
                 </h2>
                 <p className="text-muted-foreground mb-4">{post.excerpt}</p>
                 <div className="flex items-center justify-between pt-4 border-t border-border/40">
                   <span className="text-xs text-muted-foreground font-mono">{post.readTime} read</span>
-                  <button className="inline-flex items-center gap-1 text-sm font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    Read article <ArrowRight className="w-3 h-3" />
-                  </button>
+                  {post.slug === "best-free-video-editing-software-for-pc" ? (
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="inline-flex items-center gap-1 text-sm font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      Read article <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  ) : (
+                    <button className="inline-flex items-center gap-1 text-sm font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                      Read article <ArrowRight className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
             </article>
