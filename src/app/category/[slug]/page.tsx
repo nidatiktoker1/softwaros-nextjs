@@ -11,7 +11,7 @@ const categoryDescriptions: Record<string, string> = {
   development: "Compare the best development tools, IDEs, and code editors. Real pricing, keyboard shortcuts, and feature comparisons for developers.",
   "ai-tools": "Compare the best AI tools for writing, coding, image generation, and research. Real pricing, use cases, and head-to-head comparisons.",
   "password-managers": "Compare the best password managers for security, sync, and sharing. Side-by-side pricing, features, and zero-knowledge encryption comparisons.",
-  "code-editors": "Compare the best code editors and IDEs. Find the right editor with plugin ecosystems, language support, and pricing comparisons.",
+  "code-editors": "18 code editors compared for 2026 — VS Code best overall, Cursor best for AI coding, Zed fastest. Pricing, shortcuts & features side by side.",
   "email-marketing": "Compare the best email marketing platforms for automation, deliverability, and analytics. Real pricing and feature comparisons.",
   "cloud-storage": "Compare the best cloud storage services for sync, sharing, and backup. Pricing per GB, security, and collaboration feature comparisons.",
   antivirus: "Compare the best antivirus software for real-time protection, performance, and value. Side-by-side test scores and pricing.",
